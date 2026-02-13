@@ -56,6 +56,18 @@ export default function MapPage() {
     const [totalPoints, setTotalPoints] = useState(0);
     const [showFilters, setShowFilters] = useState(false);
 
+    // Auto-load data on mount
+    useEffect(() => {
+        loadCalendarData();
+    }, []);
+
+    // Auto-generate map when data AND routes are ready
+    useEffect(() => {
+        if (calendarData.length > 0 && selectedRoutes.length > 0 && !mapHtml && !loading) {
+            generateMap();
+        }
+    }, [calendarData, selectedRoutes]);
+
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
             if (event.data.type === 'DOWNLOAD_EXCEL') {
@@ -130,9 +142,10 @@ export default function MapPage() {
                 // Atualizar Filtros de Rotas e Unidades
                 const uniqueRoutes = [...new Set(formattedData.map(item => item.Rota))].sort();
                 setAvailableRoutes(uniqueRoutes);
+                setSelectedRoutes(uniqueRoutes); // Seleciona todas por padrão
 
                 const uniqueUnits = [...new Set(formattedData.map((item: any) => item.Unidade))].filter(Boolean) as string[];
-                setUnits(uniqueUnits);
+                setUnits(['Todas', ...uniqueUnits.sort()]);
 
                 setLoading(false);
                 return; // SUCESSO! Ignora o fallback antigo

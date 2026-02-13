@@ -28,6 +28,7 @@ import resultsHandler from './results.ts';
 import reportHandler from './reports/generate.ts';
 import generateCalendarHandler from './generate-calendar.ts';
 import usersHandler from './users.ts';
+import generateMapHandler from './generate-map.ts';
 
 // Wrapper to handle async errors
 const wrap = (handler: any) => async (req: any, res: any) => {
@@ -69,6 +70,7 @@ app.post('/api/generate-calendar', wrap(generateCalendarHandler));
 app.all('/api/users', wrap(usersHandler));
 
 app.get('/api/reports/generate', wrap(reportHandler));
+app.all('/api/generate-map', wrap(generateMapHandler));
 
 app.listen(PORT, () => {
   console.log(`
