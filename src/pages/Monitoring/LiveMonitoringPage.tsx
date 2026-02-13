@@ -216,11 +216,9 @@ export default function LiveMonitoringPage() {
             const driverId = activeRouteForMap.driver.id;
             const routeId = activeRouteForMap.id;
 
-            setDriverTrace([]); // Reset
-            setMessages([]); // Reset chat
+            setDriverTrace([]);
+            setMessages([]);
 
-            // 1. Fetch History Telemetry
-            // ... (keep existing fetchHistory) ...
             const fetchHistory = async () => {
                 const oneHourAgo = new Date();
                 oneHourAgo.setHours(oneHourAgo.getHours() - 1);
@@ -232,186 +230,104 @@ export default function LiveMonitoringPage() {
                     .order('timestamp', { ascending: true })
                     .limit(2500);
 
+                let rawTrace: [number, number][] = [];
+
                 if (data && data.length > 0) {
-                    // 1. Raw Point Filtering (Noise Reduction)
-                    // Increased threshold to ~15 meters to reduce point count and jitter
                     const filteredData = data.filter((p: any, i: number) => {
                         if (i === 0) return true;
                         const prev = data[i - 1];
                         const dist = Math.sqrt(Math.pow(p.latitude - prev.latitude, 2) + Math.pow(p.longitude - prev.longitude, 2));
-                        return dist > 0.00015; // Approx 15 meters
+                        return dist > 0.00015;
                     });
-
-                    const rawTrace = filteredData.map((d: any) => [d.latitude, d.longitude] as [number, number]);
-
-                    // 2. Initial Render with cleaned raw data
+                    rawTrace = filteredData.map((d: any) => [d.latitude, d.longitude] as [number, number]);
                     setDriverTrace(rawTrace);
                     setLatestTelemetry(data[data.length - 1]);
                     lastValidPosition.current = [data[data.length - 1].latitude, data[data.length - 1].longitude];
-
-
-                    // 3. Attempt Map Matching (Snap-to-Road) using OSRM
-                    // Process in chunks of 80 points to respect API limits
-                    if (rawTrace.length > 2) {
-                        try {
-                            const matchedTrace: [number, number][] = [];
-                            const CHUNK_SIZE = 80;
-
-                            // Only match if we have enough points, otherwise raw is fine
-                            for (let i = 0; i < rawTrace.length; i += CHUNK_SIZE) {
-                                // Add overlap of 1 point to ensure continuity between chunks
-                                const chunkStart = i > 0 ? i - 1 : i;
-                                const chunk = rawTrace.slice(chunkStart, i + CHUNK_SIZE);
-
-                                if (chunk.length < 2) continue;
-
-                                const coordString = chunk.map(p => `${p[1]},${p[0]}`).join(';'); // Lon,Lat
-
-                                // Increased radius to 60m to tolerate GPS low accuracy
-                                try {
-                                    // Use 'match' service for historical trace
-                                    const response = await fetch(`https://router.project-osrm.org/match/v1/driving/${coordString}?overview=full&geometries=geojson&radiuses=${chunk.map(() => '60').join(';')}`);
-                                    const resJson = await response.json();
-
-                                    if (resJson.code === 'Ok' && resJson.matchings) {
-                                        // OSRM returns multiple matchings if trace is split. 
-                                        // We concat all geometry coordinates.
-                                        resJson.matchings.forEach((m: any) => {
-                                            const coords = m.geometry.coordinates.map((c: any) => [c[1], c[0]]);
-                                            matchedTrace.push(...coords);
-                                        });
-                                    } else {
-                                        // Fallback: use raw points for this chunk
-                                        matchedTrace.push(...chunk);
-                                    }
-                                } catch (e) {
-                                    console.warn("OSRM Match chunk failed, using raw:", e);
-                                    matchedTrace.push(...chunk);
-                                }
-
-                                // Small delay to play nice with demo API
-                                await new Promise(r => setTimeout(r, 100));
-                            }
-
-                            if (matchedTrace.length > 0) {
-                                setDriverTrace(matchedTrace);
-                            }
-                        } catch (err) {
-                            console.error("Map matching critical failure:", err);
-                        }
+                    calculateRouteToNextPoint(data[data.length - 1].latitude, data[data.length - 1].longitude, activeRouteForMap);
+                } else {
+                    const firstPoint = activeRouteForMap.points?.find((p: any) => p.latitude && p.longitude);
+                    if (firstPoint && !lastValidPosition.current) {
+                        lastValidPosition.current = [firstPoint.latitude, firstPoint.longitude];
                     }
+                }
+
+                if (rawTrace.length > 2) {
+                    try {
+                        const matchedTrace: [number, number][] = [];
+                        const CHUNK_SIZE = 80;
+                        for (let i = 0; i < rawTrace.length; i += CHUNK_SIZE) {
+                            const chunkStart = i > 0 ? i - 1 : i;
+                            const chunk = rawTrace.slice(chunkStart, i + CHUNK_SIZE);
+                            if (chunk.length < 2) continue;
+                            const coordString = chunk.map(p => `${p[1]},${p[0]}`).join(';');
+                            try {
+                                const response = await fetch(`https://router.project-osrm.org/match/v1/driving/${coordString}?overview=full&geometries=geojson&radiuses=${chunk.map(() => '60').join(';')}`);
+                                const resJson = await response.json();
+                                if (resJson.code === 'Ok' && resJson.matchings) {
+                                    resJson.matchings.forEach((m: any) => {
+                                        const coords = m.geometry.coordinates.map((c: any) => [c[1], c[0]]);
+                                        matchedTrace.push(...coords);
+                                    });
+                                } else { matchedTrace.push(...chunk); }
+                            } catch (e) { matchedTrace.push(...chunk); }
+                            await new Promise(r => setTimeout(r, 100));
+                        }
+                        if (matchedTrace.length > 0) setDriverTrace(matchedTrace);
+                    } catch (err) { console.error("Map matching failure:", err); }
                 }
             };
             fetchHistory();
 
-            // 2. Fetch Chat History
             const fetchChat = async () => {
-                const { data } = await supabase
-                    .from('route_messages')
-                    .select('*')
-                    .eq('route_id', routeId)
-                    .order('created_at', { ascending: true });
+                const { data } = await supabase.from('route_messages').select('*').eq('route_id', routeId).order('created_at', { ascending: true });
                 if (data) setMessages(data);
             };
             fetchChat();
 
-            // 3. Subscribe Telemetry
-            subscription = supabase
-                .channel(`tracking_${driverId}`)
-                .on('postgres_changes', {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'driver_telemetry'
-                }, (payload) => {
-                    if (payload.new.driver_id !== driverId) return;
+            subscription = supabase.channel(`tracking_${driverId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'driver_telemetry' }, (payload) => {
+                if (payload.new.driver_id !== driverId) return;
+                const newLat = payload.new.latitude;
+                const newLon = payload.new.longitude;
+                if (lastValidPosition.current) {
+                    const [lastLat, lastLon] = lastValidPosition.current;
+                    const dist = Math.sqrt(Math.pow(newLat - lastLat, 2) + Math.pow(newLon - lastLon, 2));
+                    if (dist < 0.0001) return;
+                }
+                lastValidPosition.current = [newLat, newLon];
+                setDriverTrace(prev => [...prev, [newLat, newLon]]);
+                setLatestTelemetry((prev: any) => ({ ...prev, ...payload.new }));
+                const currentRoute = routes.find(r => r.id === activeRouteForMap?.id);
+                if (currentRoute) calculateRouteToNextPoint(newLat, newLon, currentRoute);
+            }).subscribe();
 
-                    const newLat = payload.new.latitude;
-                    const newLon = payload.new.longitude;
+            chatSubscription = supabase.channel(`chat_${routeId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'route_messages', filter: `route_id=eq.${routeId}` }, (payload) => {
+                setMessages(prev => [...prev, payload.new]);
+                if (payload.new.sender_type === 'driver') {
+                    playNotificationSound();
+                    if (!isChatVisibleRef.current) setUnreadCount(prev => prev + 1);
+                }
+            }).subscribe();
 
-                    // Noise Filter: Check distance from last valid update
-                    // 0.0001 degrees is approx 11 meters at equator.
-                    if (lastValidPosition.current) {
-                        const [lastLat, lastLon] = lastValidPosition.current;
-                        const dist = Math.sqrt(Math.pow(newLat - lastLat, 2) + Math.pow(newLon - lastLon, 2));
-
-                        // If movement is negligible (GPS jitter), IGNORE completely (icon won't move, trace won't grow)
-                        if (dist < 0.0001) return;
-                    }
-
-                    // Update valid position
-                    lastValidPosition.current = [newLat, newLon];
-                    const newPoint: [number, number] = [newLat, newLon];
-
-                    setDriverTrace(prev => [...prev, newPoint]);
-                    setLatestTelemetry((prev: any) => ({ ...prev, ...payload.new }));
-
-                    // NEW: Calculate route to next point when driver moves
-                    const currentRoute = routes.find(r => r.id === activeRouteForMap?.id);
-                    if (currentRoute) {
-                        calculateRouteToNextPoint(newLat, newLon, currentRoute);
-                    }
-                })
-                .subscribe();
-
-            // 4. Subscribe Chat Realtime WITH SOUND
-            chatSubscription = supabase
-                .channel(`chat_${routeId}`)
-                .on('postgres_changes', {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'route_messages',
-                    filter: `route_id=eq.${routeId}`
-                }, (payload) => {
-                    setMessages(prev => [...prev, payload.new]);
-                    // Only play sound if message is from DRIVER
-                    if (payload.new.sender_type === 'driver') {
-                        playNotificationSound();
-                        if (!isChatVisibleRef.current) {
-                            setUnreadCount(prev => prev + 1);
+            pointsSubscription = supabase.channel(`points_${routeId}`).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'route_points', filter: `route_id=eq.${routeId}` }, (payload) => {
+                setRoutes(prevRoutes => prevRoutes.map(r => {
+                    if (r.id === routeId) {
+                        const updatedPoints = r.points.map((p: any) => p.id === payload.new.id ? { ...p, ...payload.new } : p);
+                        if (lastValidPosition.current) {
+                            const [lat, lon] = lastValidPosition.current;
+                            calculateRouteToNextPoint(lat, lon, { ...r, points: updatedPoints });
                         }
+                        return { ...r, points: updatedPoints };
                     }
-                })
-                .subscribe();
-
-            // 5. Subscribe to Route Points Updates (Status: completed/occurrence)
-            pointsSubscription = supabase
-                .channel(`points_${routeId}`)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'route_points',
-                    filter: `route_id=eq.${routeId}`
-                }, (payload) => {
-                    // Update Routes State
-                    setRoutes(prevRoutes => {
-                        return prevRoutes.map(r => {
-                            if (r.id === routeId) {
-                                // Update specific point
-                                const updatedPoints = r.points.map((p: any) =>
-                                    p.id === payload.new.id ? { ...p, ...payload.new } : p
-                                );
-
-                                // Trigger route update immediately with new point status
-                                if (lastValidPosition.current) {
-                                    const [lat, lon] = lastValidPosition.current;
-                                    const updatedRouteObj = { ...r, points: updatedPoints };
-                                    calculateRouteToNextPoint(lat, lon, updatedRouteObj);
-                                }
-
-                                return { ...r, points: updatedPoints };
-                            }
-                            return r;
-                        });
-                    });
-                })
-                .subscribe();
+                    return r;
+                }));
+            }).subscribe();
         }
 
         return () => {
             if (subscription) supabase.removeChannel(subscription);
             if (chatSubscription) supabase.removeChannel(chatSubscription);
             if (pointsSubscription) supabase.removeChannel(pointsSubscription);
-        }
+        };
     }, [isMapOpen, activeRouteForMap]); // Depend only on Map/Route changes
 
     const sendMessage = async () => {
@@ -435,9 +351,37 @@ export default function LiveMonitoringPage() {
     // ... (Keep existing fetchVehicles, fetchMonitoringData, etc) ...
 
     useEffect(() => {
+        const channel = supabase
+            .channel('global_routes_changes')
+            .on('postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'routes', filter: `route_date=eq.${selectedDate}` },
+                async (payload) => {
+                    console.log('Global route update:', payload);
+                    // Instead of full fetch, we can manually update if we have the driver data
+                    // But to be safe and get nested driver data, let's trigger a light refetch or update state
+                    setRoutes(prev => prev.map(r => {
+                        if (r.id === payload.new.id) {
+                            // Merge basic fields, but we might lose the 'driver' object join if we just use payload.new
+                            // So we check if driver_id changed
+                            if (r.driver_id !== payload.new.driver_id) {
+                                fetchMonitoringData(); // Refetch to get joins
+                                return r;
+                            }
+                            return { ...r, ...payload.new };
+                        }
+                        return r;
+                    }));
+                }
+            )
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
+    }, [selectedDate]);
+
+    useEffect(() => {
         fetchVehicles();
         fetchMonitoringData();
-        const interval = setInterval(fetchMonitoringData, 5000); // 10s polling
+        const interval = setInterval(fetchMonitoringData, 10000); // Increased interval to 10s since we have realtime
         return () => clearInterval(interval);
     }, [selectedDate]);
 
@@ -624,25 +568,12 @@ export default function LiveMonitoringPage() {
 
             if (routesError) throw routesError;
 
-            // Explicitly fetch driver photos to guarantee fresh data
-            const { data: driversData } = await supabase
-                .from('drivers')
-                .select('id, photo_url');
-
-            // Merge photo_url into routes
+            // Sort points ensure correct order and calculate progress
             const processedRoutes = (routesData || []).map((route: any) => {
-                const driverInfo = driversData?.find(d => d.id === route.driver_id);
-
-                // Sort points ensure correct order
                 const sortedPoints = route.points ? [...route.points].sort((a: any, b: any) => (a.sequence || 0) - (b.sequence || 0)) : [];
-
                 return {
                     ...route,
                     points: sortedPoints,
-                    driver: {
-                        ...route.driver,
-                        photo_url: driverInfo?.photo_url || null
-                    },
                     // Calculate progress
                     progress: sortedPoints.length > 0 ? Math.round((sortedPoints.filter((p: any) => p.status === 'collected').length / sortedPoints.length) * 100) : 0
                 };
@@ -1525,54 +1456,54 @@ export default function LiveMonitoringPage() {
                                     const currentRoute = routes.find(r => r.id === activeRouteForMap.id) || activeRouteForMap;
                                     const telem = latestTelemetry || { speed: 0, battery_level: 0, stoppedTime: 0, timestamp: new Date().toISOString() };
                                     return (
-                                        <div className="absolute top-4 right-0 left-0 mx-auto w-[95%] sm:left-auto sm:mx-0 sm:right-4 sm:w-[450px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-0 z-[1000] border border-blue-100 overflow-hidden font-sans transition-all duration-300">
+                                        <div className="absolute top-2 right-0 left-0 mx-auto w-[92%] sm:top-4 sm:left-auto sm:mx-0 sm:right-4 sm:w-[450px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-0 z-[1000] border border-blue-100 overflow-hidden font-sans transition-all duration-300">
                                             {/* Header - Driver Info */}
-                                            <div className="bg-primary p-4 text-white relative">
+                                            <div className="bg-primary p-3 sm:p-4 text-white relative">
                                                 <button
                                                     onClick={() => setIsStatusExpanded(!isStatusExpanded)}
-                                                    className="absolute top-4 right-4 p-1 hover:bg-white/10 rounded-full transition-colors z-10"
+                                                    className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1 hover:bg-white/10 rounded-full transition-colors z-10"
                                                     title={isStatusExpanded ? "Recolher Detalhes" : "Expandir Detalhes"}
                                                 >
-                                                    {isStatusExpanded ? <ChevronUp className="w-5 h-5 text-white" /> : <ChevronDown className="w-5 h-5 text-white" />}
+                                                    {isStatusExpanded ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />}
                                                 </button>
 
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-16 h-16 rounded-full border-2 border-white/50 shadow-lg overflow-hidden flex-shrink-0 bg-white">
+                                                <div className="flex items-center gap-3 sm:gap-4">
+                                                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-white/50 shadow-lg overflow-hidden flex-shrink-0 bg-white">
                                                         {currentRoute.driver?.photo_url ? (
                                                             <img src={currentRoute.driver.photo_url} alt="Motorista" className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-blue-600 font-bold text-xl">
+                                                            <div className="w-full h-full flex items-center justify-center text-blue-600 font-bold text-lg sm:text-xl">
                                                                 {currentRoute.driver?.name?.charAt(0) || 'M'}
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="flex-1 min-w-0 pr-8">
+                                                    <div className="flex-1 min-w-0 pr-6 sm:pr-8">
                                                         <div className="flex items-center justify-between">
-                                                            <h3 className="font-bold text-lg truncate pr-2">{currentRoute.driver?.name || 'Motorista'}</h3>
-                                                            <Badge className="bg-white/20 hover:bg-white/30 text-white border-0">
+                                                            <h3 className="font-bold text-sm sm:text-lg truncate pr-2">{currentRoute.driver?.name || 'Motorista'}</h3>
+                                                            <Badge className="bg-white/20 hover:bg-white/30 text-white border-0 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0">
                                                                 {currentRoute.vehicle_plate}
                                                             </Badge>
                                                         </div>
-                                                        <div className="text-blue-100 text-xs mt-1 flex items-center gap-2">
-                                                            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {activeRouteForMap.points?.length || 0} Pontos</span>
+                                                        <div className="text-blue-100 text-[9px] sm:text-xs mt-0.5 flex items-center gap-1.5 sm:gap-2">
+                                                            <span className="flex items-center gap-1"><MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> {activeRouteForMap.points?.length || 0} Pts</span>
                                                             <span>•</span>
-                                                            <span>Última atualização: {new Date().toLocaleTimeString('pt-BR')}</span>
+                                                            <span className="truncate">Atu: {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 {/* NEW: ETA to Next Point */}
                                                 {etaToNextPoint && (
-                                                    <div className="mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-2 border border-white/20">
-                                                        <div className="flex items-center justify-between text-xs">
+                                                    <div className="mt-2 sm:mt-3 bg-white/10 backdrop-blur-sm rounded-lg p-1.5 sm:p-2 border border-white/20">
+                                                        <div className="flex items-center justify-between text-[10px] sm:text-xs">
                                                             <span className="text-blue-100 font-medium flex items-center gap-1">
-                                                                <Navigation className="w-3 h-3" /> Próximo Ponto
+                                                                <Navigation className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Próximo Ponto
                                                             </span>
-                                                            <div className="flex items-center gap-3">
-                                                                <span className="bg-orange-500 text-white px-2 py-0.5 rounded font-bold">
+                                                            <div className="flex items-center gap-2 sm:gap-3">
+                                                                <span className="bg-orange-500 text-white px-1.5 py-0.5 rounded font-bold">
                                                                     {etaToNextPoint.distance}
                                                                 </span>
-                                                                <span className="bg-orange-500 text-white px-2 py-0.5 rounded font-bold">
+                                                                <span className="bg-orange-500 text-white px-1.5 py-0.5 rounded font-bold">
                                                                     {etaToNextPoint.duration}
                                                                 </span>
                                                             </div>

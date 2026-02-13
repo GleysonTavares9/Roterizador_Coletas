@@ -91,9 +91,11 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
     const [optimizationSettings, setOptimizationSettings] = useState<any>(null);
     const [visibleRoutes, setVisibleRoutes] = useState<Set<string>>(new Set());
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const initialBoundsSet = useRef(false);
+    const initialBoundsSet = useRef<string | null>(null); // Track which runId we centered for
     const [showClusters, setShowClusters] = useState(false);
     const clusterLayerRef = useRef<L.LayerGroup | null>(null);
+    const [mapType, setMapType] = useState<'traditional' | 'light' | 'dark' | 'satellite'>('traditional');
+    const tileLayerRef = useRef<L.TileLayer | null>(null);
 
     // Toggle Tela Cheia
     const toggleFullScreen = () => {
@@ -103,6 +105,18 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
             mapRef.current?.invalidateSize();
         }, 100);
     };
+
+    // Bloquear scroll do body quando em tela cheia
+    useEffect(() => {
+        if (isFullScreen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [isFullScreen]);
 
     // Recentrar mapa nas rotas visíveis
     const recenterMap = () => {
@@ -371,14 +385,10 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
         }
     }, [routesData]);
 
-    // Master Toggle: controla apenas as rotas que passaram nos filtros atuais (Data/Veículo)
+    // Master Toggle: controla apenas as rotas que passaram nos filtros atuais
     const toggleAllRotation = () => {
-        // Obter apenas as rotas que estão atualmente na lista (filtradas por data/veículo)
-        const currentFilteredIds = routesData?.routes?.filter((r: any) => {
-            const matchDate = selectedDates.has('all') || selectedDates.has(String(r.date).trim());
-            const matchVehicle = selectedVehicle === 'all' || String(r.vehicle).trim() === String(selectedVehicle).trim();
-            return matchDate && matchVehicle;
-        }).map((r: any) => r.id) || [];
+        const currentFilteredIds = currentFilteredRoutes.map((r: any) => r.id);
+        if (currentFilteredIds.length === 0) return;
 
         const allCurrentVisible = currentFilteredIds.every((id: string) => visibleRoutes.has(id));
 
@@ -415,9 +425,37 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
         if (error) {
             alert('Erro ao vincular motorista');
         } else {
+            // No need to update state manually if Realtime is working, but it's safer
             setRouteStats(prev => prev.map(s => s.routeId === routeId ? { ...s, driverId } : s));
+            setRoutesData((prev: any) => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    routes: prev.routes.map((r: any) => r.id === routeId ? { ...r, driver_id: driverId } : r)
+                };
+            });
         }
     };
+
+    // Realtime Sync for Driver Assignments
+    useEffect(() => {
+        const channel = supabase
+            .channel('map_routes_sync')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'routes' }, (payload) => {
+                const updatedRoute = payload.new;
+                setRouteStats(prev => prev.map(s => s.id === updatedRoute.id ? { ...s, driverId: updatedRoute.driver_id } : s));
+                setRoutesData((prev: any) => {
+                    if (!prev || !prev.routes) return prev;
+                    return {
+                        ...prev,
+                        routes: prev.routes.map((r: any) => r.id === updatedRoute.id ? { ...r, driver_id: updatedRoute.driver_id } : r)
+                    };
+                });
+            })
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
+    }, []);
 
     // Cores vibrantes para as rotas
     // Gerar 120 cores distintas (HSL com Golden Ratio)
@@ -637,13 +675,22 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
     useEffect(() => {
         if (!containerRef.current || !runId) return;
 
-        // Inicializar mapa apenas uma vez
         if (!mapRef.current) {
-            mapRef.current = L.map(containerRef.current).setView([-19.8157, -43.9542], 12); // Padrão BH
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap',
+            mapRef.current = L.map(containerRef.current, {
+                attributionControl: true,
+                zoomControl: false
+            }).setView([-19.8157, -43.9542], 12); // Padrão BH
+
+            if (mapRef.current.attributionControl) {
+                mapRef.current.attributionControl.setPrefix('');
+            }
+
+            tileLayerRef.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© Sistema de Roteirização | © OpenStreetMap',
                 maxZoom: 19
             }).addTo(mapRef.current);
+
+            L.control.zoom({ position: 'bottomleft' }).addTo(mapRef.current);
             layerGroupRef.current = L.layerGroup().addTo(mapRef.current);
         }
 
@@ -750,6 +797,46 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
         fetchRouteData();
     }, [JSON.stringify(runId)]);
 
+    // Efeito para trocar o estilo do mapa
+    useEffect(() => {
+        if (!mapRef.current || !tileLayerRef.current) return;
+
+        const map = mapRef.current;
+
+        map.eachLayer(l => {
+            if (l instanceof L.TileLayer) map.removeLayer(l);
+        });
+
+        const newUrl = mapType === 'traditional'
+            ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            : mapType === 'light'
+                ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+                : mapType === 'dark'
+                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                    : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+
+        const newAttr = mapType === 'traditional'
+            ? '© Sistema de Roteirização | © OpenStreetMap'
+            : mapType === 'light' || mapType === 'dark'
+                ? '© Sistema de Roteirização | © CARTO'
+                : '© Sistema de Roteirização | © Esri | Source: Esri, Maxar, Earthstar Geographics';
+
+        tileLayerRef.current = L.tileLayer(newUrl, {
+            attribution: newAttr,
+            maxZoom: mapType === 'satellite' ? 18 : 19
+        }).addTo(map);
+
+        // Se for satélite, adicionar os nomes das ruas por cima para não ficar perdido
+        if (mapType === 'satellite') {
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+                attribution: '© CARTO',
+                pane: 'markerPane', // Garante que fica visível acima do satélite
+                zIndex: 1000
+            }).addTo(map);
+        }
+
+    }, [mapType]);
+
     useEffect(() => {
         if (!mapRef.current || !routesData || !layerGroupRef.current) return;
 
@@ -768,31 +855,8 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
 
         const { routes, depots, unserved_points } = routesData;
 
-        // Filtrar rotas por data/veículo/mês/unidade (PARA MOSTRAR NA LISTA)
-        let filteredRoutes = routes.filter((r: any) => {
-            const dateStr = String(r.date || '').trim();
-
-            // Filtro de Mês
-            if (selectedMonth !== 'all') {
-                let month = '';
-                if (dateStr.includes('-')) month = dateStr.split('-')[1];
-                else if (dateStr.includes('/')) month = dateStr.split('/')[1];
-
-                if (parseInt(month) !== parseInt(selectedMonth)) return false;
-            }
-
-            // Filtro de Unidade
-            if (selectedUnit !== 'all') {
-                const rUnit = String(r.unidade || r.unit_name || '').trim();
-                if (rUnit !== selectedUnit) return false;
-            }
-
-            const matchesDate = selectedDates.has('all') || selectedDates.has(dateStr);
-            const vehicleStr = String(r.vehicle || '').trim();
-            const selectedVehicleStr = String(selectedVehicle).trim();
-            const matchesVehicle = selectedVehicle === 'all' || vehicleStr === selectedVehicleStr;
-            return matchesDate && matchesVehicle;
-        });
+        // Usar a lista pré-filtrada do memo
+        let filteredRoutes = currentFilteredRoutes;
 
         // Rotas que serão efetivamente DESENHADAS no mapa
         const routesToDraw = filteredRoutes.filter((r: any) => visibleRoutes.has(r.id));
@@ -909,12 +973,23 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
                 }
 
                 // Fallback: Se não tem geometria salva, tenta cache ou OSRM
-                if (points.length > 0 && depots.length > 0) {
-                    const depot = depots[0];
-                    const outboundCoords = [{ lat: depot.lat, lng: depot.lng }, ...points].map(p => `${p.lng},${p.lat}`).join(';');
-                    const returnCoords = `${points[points.length - 1].lng},${points[points.length - 1].lat};${depot.lng},${depot.lat}`;
-                    const outboundKey = `out_${route.id}_${points.length}`;
-                    const returnKey = `ret_${route.id}_${points.length}`;
+                if (points.length > 0) {
+                    const depot = depots.length > 0 ? depots[0] : null;
+
+                    // Se não tem depósito, traça apenas entre os pontos. Se tem, traça Depot -> Pontos -> Depot
+                    const coordsArray = depot
+                        ? [{ lat: depot.lat, lng: depot.lng }, ...points]
+                        : points;
+
+                    const outboundCoords = coordsArray.map(p => `${p.lng},${p.lat}`).join(';');
+
+                    let returnCoords = null;
+                    if (depot && points.length > 0) {
+                        returnCoords = `${points[points.length - 1].lng},${points[points.length - 1].lat};${depot.lng},${depot.lat}`;
+                    }
+
+                    const outboundKey = `out_${route.id}_${points.length}_${depot ? 'w' : 'wo'}`;
+                    const returnKey = `ret_${route.id}_${points.length}_${depot ? 'w' : 'wo'}`;
 
                     // Ida
                     let geometry;
@@ -937,20 +1012,26 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
 
                     // Volta
                     let retGeom;
-                    if (routeCache.current.has(returnKey)) {
-                        retGeom = routeCache.current.get(returnKey).geometry;
-                    } else {
-                        const res = await fetch(`http://router.project-osrm.org/route/v1/driving/${returnCoords}?overview=full&geometries=geojson`);
-                        const data = await res.json();
-                        if (data.code === 'Ok' && data.routes?.[0]) {
-                            retGeom = data.routes[0].geometry;
-                            routeCache.current.set(returnKey, { geometry: retGeom, distance: data.routes[0].distance });
+                    if (returnCoords) {
+                        if (routeCache.current.has(returnKey)) {
+                            retGeom = routeCache.current.get(returnKey).geometry;
+                        } else {
+                            try {
+                                const res = await fetch(`http://router.project-osrm.org/route/v1/driving/${returnCoords}?overview=full&geometries=geojson`);
+                                const data = await res.json();
+                                if (data.code === 'Ok' && data.routes?.[0]) {
+                                    retGeom = data.routes[0].geometry;
+                                    routeCache.current.set(returnKey, { geometry: retGeom, distance: data.routes[0].distance });
+                                }
+                            } catch (e) {
+                                console.warn('Falha ao buscar retorno OSRM:', e);
+                            }
                         }
-                    }
 
-                    if (retGeom && visibleRoutes.has(route.id)) {
-                        const latlngs = retGeom.coordinates.map((coord: number[]) => [coord[1], coord[0]]);
-                        L.polyline(latlngs, { color, weight: 4, opacity: 0.5, dashArray: '8, 8' }).addTo(layerGroup);
+                        if (retGeom && visibleRoutes.has(route.id)) {
+                            const latlngs = retGeom.coordinates.map((coord: number[]) => [coord[1], coord[0]]);
+                            L.polyline(latlngs, { color, weight: 4, opacity: 0.5, dashArray: '8, 8' }).addTo(layerGroup);
+                        }
                     }
                 }
             });
@@ -1013,12 +1094,18 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
         if (pointsForZoom.length > 0) {
             const bounds = L.latLngBounds(pointsForZoom as [number, number][]);
 
-            // Só ajusta os bounds automaticamente na primeira renderização
-            if (!initialBoundsSet.current) {
-                map.fitBounds(bounds, { padding: [100, 100], maxZoom: 15 });
-                initialBoundsSet.current = true;
+            // Reset bounds focus if runId OR filters changed
+            const datesKey = Array.from(selectedDates).sort().join(',');
+            const currentRunKey = `${Array.isArray(runId) ? runId.join(',') : runId}_${datesKey}_${selectedVehicle}`;
+
+            if (initialBoundsSet.current !== currentRunKey) {
+                console.log('🔄 Centralizando mapa para novos filtros:', currentRunKey);
+                setTimeout(() => {
+                    map.fitBounds(bounds, { padding: [100, 100], maxZoom: 15 });
+                    map.invalidateSize();
+                }, 100);
+                initialBoundsSet.current = currentRunKey;
             }
-            // Depois disso, o mapa mantém a posição mesmo ao alterar filtros
         }
 
     }, [routesData, selectedDates, selectedVehicle, visibleRoutes, runId]);
@@ -1088,6 +1175,35 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
         return Array.from(vehicles).sort();
     }, [routesData, selectedMonth, selectedUnit]);
 
+    // --- FILTRAGEM CENTRALIZADA (Memoized) ---
+    const currentFilteredRoutes = useMemo(() => {
+        if (!routesData?.routes) return [];
+        return routesData.routes.filter((r: any) => {
+            const dateStr = String(r.date || '').trim();
+
+            // Filtro de Mês
+            if (selectedMonth !== 'all') {
+                let month = '';
+                if (dateStr.includes('-')) month = dateStr.split('-')[1];
+                else if (dateStr.includes('/')) month = dateStr.split('/')[1];
+
+                if (parseInt(month) !== parseInt(selectedMonth)) return false;
+            }
+
+            // Filtro de Unidade
+            if (selectedUnit !== 'all') {
+                const rUnit = String(r.unidade || r.unit_name || '').trim();
+                if (rUnit !== selectedUnit) return false;
+            }
+
+            const matchesDate = selectedDates.has('all') || selectedDates.has(dateStr);
+            const vehicleStr = String(r.vehicle || '').trim();
+            const selectedVehicleStr = String(selectedVehicle).trim();
+            const matchesVehicle = selectedVehicle === 'all' || vehicleStr === selectedVehicleStr;
+            return matchesDate && matchesVehicle;
+        });
+    }, [routesData, selectedMonth, selectedUnit, selectedDates, selectedVehicle]);
+
     // Datas disponíveis (Hierarquia: depende do Mês, Unidade e Veículo)
     const hierarchicalDates = useMemo(() => {
         if (!routesData?.routes) return [];
@@ -1131,21 +1247,127 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
     }, [routeStats, activeTab]);
 
     return (
-        <div style={isFullScreen ? {
-            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, background: 'white'
-        } : { position: 'relative', height: '100%', width: '100%', minHeight: '700px' }}>
+        <div className={`route-map-container ${isFullScreen ? 'fullscreen' : ''}`} style={{ position: isFullScreen ? 'static' : 'relative', width: '100%' }}>
+            <style>{`
+                .route-map-container {
+                    height: 700px;
+                    overflow: hidden;
+                    position: relative;
+                }
+                .route-map-container.fullscreen {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    z-index: 999999 !important;
+                    background: white;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .map-toolbar {
+                    position: absolute;
+                    top: 15px;
+                    left: 15px;
+                    z-index: 2000;
+                    background: rgba(255, 255, 255, 0.98);
+                    padding: 6px 12px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+                    border: 1px solid rgba(226, 232, 240, 0.8);
+                    backdrop-filter: blur(8px);
+                    max-width: calc(100% - 70px);
+                }
+                .map-sidebar {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    width: 310px;
+                    z-index: 1500;
+                    background: rgba(255, 255, 255, 0.98);
+                    box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+                    pointer-events: auto;
+                    border-left: 1px solid #e2e8f0;
+                }
+                .map-sidebar.hidden {
+                    transform: translateX(100%) !important;
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                @media (max-width: 768px) {
+                    .route-map-container {
+                        height: 60vh;
+                    }
+                    .route-map-container.fullscreen {
+                        height: 100vh;
+                    }
+                    .map-toolbar {
+                        left: 5px;
+                        right: 5px;
+                        top: 5px;
+                        max-width: none;
+                        overflow-x: auto;
+                        padding: 6px;
+                        gap: 4px;
+                        justify-content: flex-start;
+                        white-space: nowrap;
+                    }
+                    .map-sidebar {
+                        width: 280px;
+                        top: 0;
+                        bottom: 0;
+                        right: 0;
+                        left: auto;
+                        height: 100%;
+                    }
+                    .map-sidebar.hidden {
+                        transform: translateX(100%) !important;
+                    }
+                    .leaflet-bottom.leaflet-left {
+                        bottom: 20px !important;
+                    }
+                }
+            `}</style>
 
             {/* Toolbar Principal Premium - Ajustada para a Esquerda */}
-            <div style={{
-                position: 'absolute', top: 15, left: 55, // Offset para não cobrir o zoom (+/-)
-                zIndex: 2000, background: 'rgba(255,255,255,0.98)', padding: '6px 12px', borderRadius: '12px',
-                display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
-                border: '1px solid rgba(226, 232, 240, 0.8)', backdropFilter: 'blur(8px)', width: 'auto'
-            }}>
+            <div className="map-toolbar">
                 <div style={{ display: 'flex', gap: '3px', paddingRight: '8px', borderRight: '1px solid #e2e8f0' }}>
                     <button title="Centralizar" onClick={recenterMap} style={{ background: '#3b82f6', border: 'none', color: 'white', width: '28px', height: '28px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>🎯</button>
                     <button onClick={() => setShowClusters(!showClusters)} title="Territórios" style={{ background: showClusters ? '#8b5cf6' : '#f1f5f9', border: 'none', color: showClusters ? 'white' : '#64748b', width: '28px', height: '28px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>📦</button>
-                    <button onClick={toggleFullScreen} title="Tela Cheia" style={{ background: '#f1f5f9', border: 'none', color: '#64748b', width: '28px', height: '28px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>↗️</button>
+                    <button
+                        onClick={() => {
+                            if (mapType === 'traditional') setMapType('light');
+                            else if (mapType === 'light') setMapType('dark');
+                            else if (mapType === 'dark') setMapType('satellite');
+                            else setMapType('traditional');
+                        }}
+                        title={`Mapa atual: ${mapType === 'traditional' ? 'Tradicional' : mapType === 'light' ? 'Limpo (Carto)' : mapType === 'dark' ? 'Escuro' : 'Satélite'}`}
+                        style={{
+                            background: mapType !== 'traditional' ? '#0ea5e9' : '#f1f5f9',
+                            border: 'none',
+                            color: mapType !== 'traditional' ? 'white' : '#64748b',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        {mapType === 'traditional' ? '🌍' : mapType === 'light' ? '🗺️' : mapType === 'dark' ? '🌙' : '🛰️'}
+                    </button>
+                    <button onClick={toggleFullScreen} title={isFullScreen ? "Sair da Tela Cheia" : "Tela Cheia"} style={{ background: isFullScreen ? '#ef4444' : '#f1f5f9', border: 'none', color: isFullScreen ? 'white' : '#64748b', width: '28px', height: '28px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>{isFullScreen ? '↙️' : '↗️'}</button>
                 </div>
 
                 <div ref={dateDropdownRef} style={{ position: 'relative' }}>
@@ -1225,7 +1447,12 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
                 </select>
 
                 <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '600', color: '#475569', cursor: 'pointer', background: '#f8fafc', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>
-                    <input type="checkbox" checked={routesData?.routes?.every((r: any) => visibleRoutes.has(r.id))} onChange={toggleAllRotation} style={{ cursor: 'pointer' }} /> 👁️ Ver Tudo
+                    <input
+                        type="checkbox"
+                        checked={currentFilteredRoutes.length > 0 && currentFilteredRoutes.every((r: any) => visibleRoutes.has(r.id))}
+                        onChange={toggleAllRotation}
+                        style={{ cursor: 'pointer' }}
+                    /> 👁️ Ver Tudo
                 </label>
 
                 <div style={{ display: 'flex', gap: '8px', paddingLeft: '10px', borderLeft: '1px solid #e2e8f0' }}>
@@ -1235,12 +1462,7 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
             </div>
 
             {/* Sidebar Premium */}
-            <div style={{
-                position: 'absolute', top: 15, right: 15, bottom: 15, width: '310px',
-                zIndex: 1500, background: 'rgba(255,255,255,0.95)', borderRadius: '8px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column',
-                overflow: 'hidden', transform: showSummary ? 'translateX(0)' : 'translateX(340px)', transition: 'transform 0.3s'
-            }}>
+            <div className={`map-sidebar ${!showSummary ? 'hidden' : ''}`}>
                 <div style={{ padding: '15px', borderBottom: '2px solid #22c55e', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
                     <b style={{ fontSize: '16px' }}>📊 Resumo</b>
                     <button onClick={() => setShowSummary(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
@@ -1286,7 +1508,7 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
                                     <span style={{ opacity: 0.7 }}>⚖️</span> <b>{s.weight.toFixed(0)}</b> kg
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                    <span style={{ opacity: 0.7 }}>🛣️</span> <b>{s.distance.toFixed(1)}</b> km
+                                    <span style={{ opacity: 0.7 }}>🛣️</span> <b>{s.distance > 0 ? s.distance.toFixed(1) : (s.points > 0 ? (s.points * 1.5).toFixed(1) : '0.0')}</b> km
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#94a3b8' }}>
                                     <span style={{ opacity: 0.7 }}>📅</span> {s.date.split('-').reverse().join('/')}
@@ -1318,18 +1540,45 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
                             <span>Peso:</span> <b style={{ color: '#0f172a' }}>{sortedStats.reduce((acc, s) => acc + s.weight, 0).toLocaleString()} kg</b>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Km Total:</span> <b style={{ color: '#22c55e' }}>{sortedStats.reduce((acc, s) => acc + s.distance, 0).toFixed(1)} km</b>
+                            <span>Km Total:</span> <b style={{ color: '#22c55e' }}>{sortedStats.reduce((acc, s) => acc + (s.distance > 0 ? s.distance : (s.points * 1.5)), 0).toFixed(1)} km</b>
                         </div>
                     </div>
                 </div>
             </div>
 
             {!showSummary && (
-                <button onClick={() => setShowSummary(true)} style={{ position: 'absolute', bottom: 20, right: 20, zIndex: 2000, background: '#22c55e', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '30px', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(0,0,0,0.2)', cursor: 'pointer' }}>📊 ABRIR</button>
+                <button
+                    onClick={() => setShowSummary(true)}
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        right: 0,
+                        transform: 'translateY(-50%)',
+                        zIndex: 100000,
+                        background: '#22c55e',
+                        color: 'white',
+                        border: 'none',
+                        padding: '12px 10px',
+                        borderRadius: '12px 0 0 12px',
+                        fontWeight: '800',
+                        boxShadow: '-4px 0 12px rgba(34, 197, 94, 0.4)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '11px',
+                        transition: 'all 0.2s'
+                    }}
+                    className="hover:-translate-x-1"
+                >
+                    <span style={{ letterSpacing: '0.5px' }}>RESUMO</span>
+                    <span style={{ fontSize: '20px' }}>📊</span>
+                </button>
             )}
 
             {/* Mapa preenchendo o fundo */}
-            <div ref={containerRef} style={{ width: '100%', height: isFullScreen ? '100%' : '700px', background: '#f0f0f0' }} />
+            <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#f0f0f0' }} />
         </div>
     );
 }

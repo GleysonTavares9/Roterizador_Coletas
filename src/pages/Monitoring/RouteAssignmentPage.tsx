@@ -13,6 +13,22 @@ export default function RouteAssignmentPage() {
 
     useEffect(() => {
         fetchData();
+
+        // Inscrever para atualizações em tempo real das rotas
+        const channel = supabase
+            .channel('db_changes_routes')
+            .on('postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'routes', filter: `route_date=eq.${selectedDate}` },
+                (payload) => {
+                    console.log('Realtime update received:', payload);
+                    setRoutes(prev => prev.map(r => r.id === payload.new.id ? { ...r, ...payload.new } : r));
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, [selectedDate]);
 
     const fetchData = async () => {

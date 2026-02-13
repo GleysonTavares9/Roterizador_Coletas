@@ -114,7 +114,9 @@ export default async function handler(req: any, res: any) {
         .tab.active { color: #0f172a; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .tab:hover:not(.active) { background: #f1f5f9; }
 
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 12px; background: #fcfcfc; }
+        #sidebar-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 12px; background: #fcfcfc; min-height: 0; }
         
         .veiculo-card {
             margin-bottom: 12px; padding: 12px; background: white; border-radius: 10px;
@@ -130,7 +132,7 @@ export default async function handler(req: any, res: any) {
         
         .select-motorista { width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; color: #475569; background: #f8fafc; cursor: pointer; }
 
-        .totais-footer { padding: 15px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; }
+        .totais-footer { padding: 15px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11px; shrink-0; }
         .total-row { display: flex; justify-content: space-between; margin-bottom: 5px; color: #475569; }
         .total-val { font-weight: 700; color: #0f172a; }
         .total-highlight { color: #16a34a; font-size: 13px; }
@@ -138,12 +140,66 @@ export default async function handler(req: any, res: any) {
         .marker-label { background: transparent; border: none; box-shadow: none; color: white; font-weight: 800; font-size: 11px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); pointer-events: none; }
 
         @media (max-width: 768px) {
-            #toolbar { display: none; }
-            #resumo-container { width: auto; left: 10px; right: 10px; top: auto; bottom: 10px; max-height: 45vh; }
+            #toolbar { 
+                top: 10px; 
+                padding: 8px 12px; 
+                gap: 8px; 
+                flex-wrap: nowrap; 
+                overflow-x: auto; 
+                justify-content: flex-start;
+                width: calc(100vw - 40px);
+                max-width: none;
+                border-radius: 8px;
+            }
+            .toolbar-group { padding-right: 8px; gap: 6px; flex-shrink: 0; }
+            .tool-icon { font-size: 16px; }
+            .toolbar-select { padding: 4px 6px; max-width: 100px; }
+            #toolbar-date-display { font-size: 11px !important; }
+            .btn-excel { padding: 4px 8px; font-size: 10px; white-space: nowrap; }
+
+            #resumo-container { 
+                width: auto; 
+                left: 10px; 
+                right: 10px; 
+                top: auto; 
+                bottom: 10px; 
+                max-height: 45vh; 
+                border-radius: 10px;
+                box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+            }
+            #sidebar-body { flex: 1; }
+            .sidebar-header { padding: 8px 12px; }
+            .sidebar-header b { font-size: 14px !important; }
+            .sidebar-tabs .tab { padding: 4px 2px; font-size: 9px; }
+            #sidebar-body select { font-size: 10px; height: 30px; }
+            .sidebar-content { padding: 8px; }
+            .veiculo-card { padding: 6px; margin-bottom: 6px; border-left-width: 4px; }
+            .v-plate { font-size: 11px; }
+            .v-header input { transform: scale(0.8); }
+            .v-stats { font-size: 9px; margin-bottom: 2px; }
+            .progress-container { height: 7px; margin: 4px 0; }
+            .progress-bar { line-height: 7px; font-size: 7px; }
+            .select-motorista { padding: 3px; font-size: 9px; }
+            
+            .totais-footer { padding: 8px 12px; }
+            .total-row { font-size: 9px; margin-bottom: 2px; }
+            .total-highlight { font-size: 11px; }
+            
+            .leaflet-bottom.leaflet-left { bottom: 50vh !important; } /* Push zoom above sidebar */
         }
     </style>
 </head>
-<body>
+<body onload="checkMobileCollapse()">
+    <script>
+        function checkMobileCollapse() {
+            if (window.innerWidth <= 768) {
+                // Só minimiza automaticamente se for mobile
+                if (typeof toggleSidebarVisibility === 'function' && !sidebarCollapsed) {
+                    toggleSidebarVisibility(); 
+                }
+            }
+        }
+    </script>
     <div id="toolbar">
         <div class="toolbar-group">
             <span class="tool-icon" title="Visão Geral" onclick="fitAll()">🌍</span>
@@ -214,8 +270,11 @@ export default async function handler(req: any, res: any) {
         const pontosRaw = ${JSON.stringify(filteredCalendarData)};
         const depots = ${JSON.stringify(depots || [])};
 
-        let map = L.map('map', { zoomControl: false }).setView([${center[0]}, ${center[1]}], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        let map = L.map('map', { zoomControl: false, attributionControl: true }).setView([${center[0]}, ${center[1]}], 12);
+        if (map.attributionControl) map.attributionControl.setPrefix('');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© Sistema de Roteirização | © OpenStreetMap'
+        }).addTo(map);
         L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
         let layerMarkers = L.layerGroup().addTo(map);
@@ -262,7 +321,7 @@ export default async function handler(req: any, res: any) {
             sidebarCollapsed = !sidebarCollapsed;
             const body = document.getElementById('sidebar-body');
             const icon = document.getElementById('sidebar-icon');
-            body.style.display = sidebarCollapsed ? 'none' : 'block';
+            body.style.display = sidebarCollapsed ? 'none' : 'flex';
             icon.textContent = sidebarCollapsed ? '▼' : '🔼';
         }
 

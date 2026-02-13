@@ -102,7 +102,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex min-h-screen bg-background text-foreground font-sans antialiased">
             {/* Mobile Header */}
-            <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-xl border-b border-border">
+            <div className="md:hidden fixed top-0 left-0 right-0 z-[9999] bg-card/95 backdrop-blur-xl border-b border-border">
                 <div className="flex items-center justify-between p-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 overflow-hidden">
@@ -122,14 +122,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
                 <div
-                    className="md:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+                    className="md:hidden fixed inset-0 bg-black/50 z-[10000] backdrop-blur-sm"
                     onClick={() => setMobileMenuOpen(false)}
                 />
             )}
 
             {/* Mobile Sidebar */}
             <aside className={cn(
-                "fixed top-0 left-0 bottom-0 w-72 bg-card border-r border-border z-50 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col",
+                "fixed top-0 left-0 bottom-0 w-72 bg-card border-r border-border z-[10001] transform transition-transform duration-300 ease-in-out md:hidden flex flex-col",
                 mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="p-6 flex flex-col items-center text-center">
@@ -167,6 +167,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             </div>
                         </div>
                     ))}
+                    <div className="pt-4 pb-2 border-t border-border mt-4">
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center w-full px-4 py-2.5 text-sm font-medium rounded-lg text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                        >
+                            <LogOut className="w-5 h-5 mr-3 text-red-500 group-hover:text-red-600" />
+                            Sair do Sistema
+                        </button>
+                    </div>
                 </nav>
 
                 <div className="p-4 border-t border-border bg-card mt-auto shrink-0">

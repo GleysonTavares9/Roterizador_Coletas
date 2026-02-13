@@ -8,25 +8,13 @@ import { API_URL } from '@/config';
 
 // Componente memorizado para evitar re-renderização (piscar) ao selecionar filtros
 const MapDisplay = memo(({ html }: { html: string }) => {
-    // Injetar estilos responsivos para mobile no HTML do mapa
+    // Injetar estilos responsivos complementares se necessário
     const responsiveHtml = html.replace(
         '</head>',
         `<style>
             @media (max-width: 768px) {
-                #resumo-container {
-                    top: 60px !important;
-                    left: 10px !important;
-                    width: auto !important;
-                    max-width: calc(100vw - 20px) !important;
-                    max-height: 40vh !important;
-                    font-size: 11px !important;
-                    padding: 10px !important;
-                }
-                .leaflet-top.leaflet-left {
-                    top: 10px !important;
-                }
                 .leaflet-control-layers {
-                    max-width: 250px !important;
+                    max-width: 200px !important;
                 }
             }
         </style></head>`

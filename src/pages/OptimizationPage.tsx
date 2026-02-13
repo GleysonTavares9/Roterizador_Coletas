@@ -3,7 +3,7 @@ import { supabase } from '@/services/supabase';
 import { API_URL } from '@/config';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Route as RouteIcon, Loader2, Calendar, Download, Save, XCircle, Eraser } from 'lucide-react';
+import { Route as RouteIcon, Loader2, Calendar, Download, Save, XCircle, Eraser, Activity } from 'lucide-react';
 import RouteMap from '@/components/RouteMap';
 
 export default function OptimizationPage() {
@@ -130,20 +130,22 @@ export default function OptimizationPage() {
                 console.log('Optimizations received:', data);
                 if (data.optimizations && data.optimizations.length > 0) {
                     setAvailableOptimizations(data.optimizations);
-                    console.log('Set available optimizations:', data.optimizations.length);
-                    // Auto-select the most recent optimization if none selected
-                    if (!runId) {
-                        const latest = data.optimizations[0];
-                        if (latest.id) {
-                            setRunId(latest.id);
-                            console.log('Auto-selected runId:', latest.id);
+
+                    // Auto-select the most relevant optimization
+                    if (!runId || runId === '') {
+                        const target = filterDate || selectedDate;
+                        const matching = data.optimizations.find((opt: any) => {
+                            const optDate = opt.settings?.target_date || opt.settings?.data_especifica || opt.date;
+                            return optDate === target;
+                        });
+
+                        if (matching) {
+                            setRunId(matching.id);
+                        } else {
+                            setRunId(data.optimizations[0].id);
                         }
                     }
-                } else {
-                    console.log('No optimizations found in response');
                 }
-            } else {
-                console.error('Failed to fetch optimizations, status:', response.status);
             }
         } catch (error) {
             console.error('Failed to fetch optimizations:', error);
@@ -358,17 +360,20 @@ export default function OptimizationPage() {
 
     // Extrair lista de datas únicas das otimizações
     // Extrair lista de datas únicas das otimizações
-    const uniqueDates = Array.from(new Set(availableOptimizations.map(opt => {
-        // Prioritize Target Date
-        const target = opt.settings?.target_date || opt.settings?.data_especifica;
-        if (target) return target;
+    // Extrair lista de datas únicas das otimizações, filtradas pelo mês/ano selecionados
+    const uniqueDates = Array.from(new Set(availableOptimizations
+        .filter(opt => {
+            const target = opt.settings?.target_date || opt.settings?.data_especifica || opt.date;
+            if (!target) return false;
+            if (target === 'tudo' || target === 'Múltiplas Datas') return true; // Lotes sempre visíveis? Ou filtrar por mês?
 
-        if (opt.date && opt.date.includes('/')) {
-            const [d, m, y] = opt.date.split('/');
-            return `${y}-${m}-${d}`;
-        }
-        return opt.date || opt.created_at.split('T')[0];
-    }))).filter(d => d).sort().reverse();
+            const [y, m] = target.split('-');
+            return y === year && parseInt(m) === parseInt(month);
+        })
+        .map(opt => {
+            const target = opt.settings?.target_date || opt.settings?.data_especifica || opt.date;
+            return target;
+        }))).filter(d => d).sort().reverse();
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -377,17 +382,17 @@ export default function OptimizationPage() {
                     <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Otimização de Rotas</h1>
                     <p className="text-sm md:text-base text-muted-foreground">Carregue dados do calendário e otimize as rotas de coleta.</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={clearAssignments}
                         disabled={loading}
-                        className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                        className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 w-full sm:w-auto"
                         title="Reseta a memória de qual veículo atende cada cliente"
                     >
                         <Eraser className="w-4 h-4 mr-2" />
-                        Limpar Memória de Rotas
+                        Limpar Memória
                     </Button>
                 </div>
             </div>
@@ -440,7 +445,7 @@ export default function OptimizationPage() {
 
                             <div className="space-y-4">
                                 <h3 className="font-medium text-sm">Filtros para Otimização</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium">Unidade</label>
                                         <select
@@ -453,12 +458,10 @@ export default function OptimizationPage() {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="space-y-2 col-span-1 md:col-span-2">
+                                    <div className="space-y-2">
                                         <div className="flex items-center justify-between mb-1">
-                                            <div className="flex items-center gap-2">
-                                                <label className="text-sm font-medium">Data com Rotas</label>
-                                            </div>
-                                            <div className="flex items-center gap-1">
+                                            <label className="text-sm font-medium">Data com Rotas</label>
+                                            <div className="flex items-center gap-1.5">
                                                 <input
                                                     type="checkbox"
                                                     id="fullMonth"
@@ -466,7 +469,7 @@ export default function OptimizationPage() {
                                                     onChange={(e) => setSelectedDate(e.target.checked ? 'tudo' : '')}
                                                     className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                                                 />
-                                                <label htmlFor="fullMonth" className="text-xs font-bold text-blue-700 cursor-pointer">MÊS INTEIRO</label>
+                                                <label htmlFor="fullMonth" className="text-xs font-bold text-blue-700 cursor-pointer uppercase">Mês Inteiro</label>
                                             </div>
                                         </div>
 
@@ -478,11 +481,11 @@ export default function OptimizationPage() {
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         />
                                     </div>
-                                    <div className="flex items-end pb-1">
-                                        <p className="text-[10px] text-muted-foreground italic mb-2">
+                                    <div className="flex items-end">
+                                        <p className="text-[10px] text-muted-foreground italic leading-tight">
                                             {selectedDate === 'tudo' ?
                                                 '💡 Modo Lote: O sistema processará todos os dias do mês de uma vez.' :
-                                                '💡 Escolha um dia específico ou marque "Mês Inteiro".'}
+                                                '💡 Escolha um dia específico ou marque "Mês Inteiro" para otimização em massa.'}
                                         </p>
                                     </div>
                                 </div>
@@ -512,7 +515,7 @@ export default function OptimizationPage() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 pt-4 border-t">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-4 pt-4 border-t">
                                         <div className="space-y-2">
                                             <label className="text-xs font-medium">Início da Jornada</label>
                                             <input
@@ -760,15 +763,17 @@ export default function OptimizationPage() {
             }
 
             <Card>
-                <CardHeader>
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <CardTitle className="text-base">Visualizar Rotas Otimizadas</CardTitle>
+                <CardHeader className="pb-3">
+                    <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-6">
+                        <CardTitle className="text-lg">Visualizar Rotas Otimizadas</CardTitle>
 
-                        <div className="flex items-center gap-2">
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] uppercase font-bold text-muted-foreground mb-1">📅 Escolha o Dia</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-auto">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground mb-1.5 flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" /> Escolha o Dia
+                                </span>
                                 <select
-                                    className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    className="h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                     value={filterDate}
                                     onChange={(e) => {
                                         const newDate = e.target.value;
@@ -809,42 +814,32 @@ export default function OptimizationPage() {
                                 >
                                     <option value="">Todas as Datas</option>
 
-                                    {/* Agrupar uniqueDates por Mês e Unidade para melhor herarquia */}
+                                    {/* Agrupar por Unidade para melhor hierarquia */}
                                     {(() => {
-                                        const groups: Record<string, Record<string, string[]>> = {};
+                                        const groups: Record<string, string[]> = {};
 
-                                        // Pegar lista de datas únicas combinadas com unidades
-                                        const dateUnitPairs = Array.from(new Set(availableOptimizations.map(opt => {
+                                        // Filtrar otimizações pelo mês/ano
+                                        const filteredOpts = availableOptimizations.filter(opt => {
                                             const target = opt.settings?.target_date || opt.settings?.data_especifica || opt.date;
-                                            const unit = opt.settings?.unidade || 'Sem Unidade';
-                                            return `${target}|${unit}`;
-                                        })));
-
-                                        dateUnitPairs.forEach(pair => {
-                                            const [d, unit] = pair.split('|');
-                                            if (d === 'tudo' || d === 'Múltiplas Datas') {
-                                                const key = 'Lote Mensal (Processamento em Massa)';
-                                                if (!groups[key]) groups[key] = {};
-                                                if (!groups[key][unit]) groups[key][unit] = [];
-                                                groups[key][unit].push(d);
-                                            } else {
-                                                const [y, m] = d.split('-');
-                                                const monthLabel = months.find(mn => mn.value === String(parseInt(m)))?.label || 'Outros';
-                                                const key = `${monthLabel} ${y}`;
-                                                if (!groups[key]) groups[key] = {};
-                                                if (!groups[key][unit]) groups[key][unit] = [];
-                                                groups[key][unit].push(d);
-                                            }
+                                            if (!target) return false;
+                                            const [y, m] = target.split('-');
+                                            return y === year && parseInt(m) === parseInt(month);
                                         });
 
-                                        return Object.entries(groups).map(([monthLabel, units]) => (
-                                            <optgroup key={monthLabel} label={monthLabel}>
-                                                {Object.entries(units).map(([unit, dates]) => (
-                                                    dates.map(date => (
-                                                        <option key={`${date}|${unit}`} value={date}>
-                                                            {unit} ➔ {(date === 'tudo' || date === 'Múltiplas Datas') ? '📅 MÊS COMPLETO' : date.split('-').reverse().join('/')}
-                                                        </option>
-                                                    ))
+                                        filteredOpts.forEach(opt => {
+                                            const target = opt.settings?.target_date || opt.settings?.data_especifica || opt.date;
+                                            const unit = opt.settings?.unidade || 'Sem Unidade';
+                                            const key = unit;
+                                            if (!groups[key]) groups[key] = [];
+                                            if (!groups[key].includes(target)) groups[key].push(target);
+                                        });
+
+                                        return Object.entries(groups).sort().map(([unit, dates]) => (
+                                            <optgroup key={unit} label={`Unidade: ${unit}`}>
+                                                {dates.sort().reverse().map(date => (
+                                                    <option key={`${date}|${unit}`} value={date}>
+                                                        {date === 'tudo' ? '📅 MÊS COMPLETO' : date.split('-').reverse().join('/')}
+                                                    </option>
                                                 ))}
                                             </optgroup>
                                         ));
@@ -853,10 +848,12 @@ export default function OptimizationPage() {
                             </div>
 
                             {availableOptimizations.length > 0 && (
-                                <div className="flex flex-col items-end">
-                                    <span className="text-[10px] uppercase font-bold text-muted-foreground mb-1">🕒 Execução (Horário)</span>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground mb-1.5 flex items-center gap-1">
+                                        <Activity className="w-3 h-3" /> Execução (Horário)
+                                    </span>
                                     <select
-                                        className="h-9 w-[280px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                        className="h-10 w-full sm:min-w-[240px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                         value={Array.isArray(runId) ? 'all' : runId}
                                         onChange={(e) => {
                                             if (e.target.value === 'all') {
@@ -991,6 +988,6 @@ export default function OptimizationPage() {
                     )}
                 </CardContent>
             </Card>
-        </div >
+        </div>
     );
 }

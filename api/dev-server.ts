@@ -28,7 +28,9 @@ import resultsHandler from './results.ts';
 import reportHandler from './reports/generate.ts';
 import generateCalendarHandler from './generate-calendar.ts';
 import usersHandler from './users.ts';
+import driversHandler from './drivers.ts';
 import generateMapHandler from './generate-map.ts';
+import driverRoutesHandler from './driver-routes.ts';
 
 // Wrapper to handle async errors
 const wrap = (handler: any) => async (req: any, res: any) => {
@@ -68,9 +70,11 @@ app.post('/api/generate-calendar', wrap(generateCalendarHandler));
 
 // Users route - accepting ALL methods
 app.all('/api/users', wrap(usersHandler));
+app.all('/api/drivers', wrap(driversHandler));
 
 app.get('/api/reports/generate', wrap(reportHandler));
 app.all('/api/generate-map', wrap(generateMapHandler));
+app.all('/api/driver-routes', wrap(driverRoutesHandler));
 
 app.listen(PORT, () => {
   console.log(`
