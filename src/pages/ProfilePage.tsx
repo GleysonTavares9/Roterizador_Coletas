@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Phone, Shield, Camera, Save, LogOut } from 'lucide-react';
+import { User, Mail, Phone, Shield, Camera, Save, LogOut, Users } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { useNavigate } from 'react-router-dom';
 
@@ -236,13 +236,14 @@ export default function ProfilePage() {
                                 </label>
                                 <select
                                     value={profile.role}
-                                    onChange={(e) => setProfile({ ...profile, role: e.target.value })}
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    disabled
+                                    className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm cursor-not-allowed"
                                 >
                                     <option value="operator">Operador</option>
                                     <option value="manager">Gerente</option>
                                     <option value="admin">Administrador</option>
                                 </select>
+                                <p className="text-[10px] text-muted-foreground italic">Sua função é gerenciada pelo administrador do sistema.</p>
                             </div>
                         </div>
 
@@ -256,16 +257,39 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            {/* Security Card */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Segurança</CardTitle>
-                    <CardDescription>Gerencie sua senha e configurações de segurança</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button variant="outline">Alterar Senha</Button>
-                </CardContent>
-            </Card>
+            {/* Security & Admin Card */}
+            <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Segurança</CardTitle>
+                        <CardDescription>Gerencie sua senha e configurações de segurança</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button variant="outline">Alterar Senha</Button>
+                    </CardContent>
+                </Card>
+
+                {profile.role === 'admin' && (
+                    <Card className="border-blue-100 bg-blue-50/30">
+                        <CardHeader>
+                            <CardTitle className="text-blue-900 flex items-center gap-2">
+                                <Shield className="w-5 h-5" />
+                                Painel Administrativo
+                            </CardTitle>
+                            <CardDescription>Acesso exclusivo para administradores</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Button
+                                onClick={() => navigate('/usuarios')}
+                                className="w-full bg-blue-900 hover:bg-blue-800 gap-2"
+                            >
+                                <Users className="w-4 h-4" />
+                                Gerenciar Usuários e Acessos
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
         </motion.div>
     );
 }

@@ -9,11 +9,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json({ limit: '50mb' }));
 
 // Import handlers using relative paths
-// Note: In standard Node ESM, we need extensions. TSX handles .ts extensions.
 import optimizeFromDbHandler from './optimize-from-db.ts';
 import settingsHandler from './settings.ts';
 import optimizationsHandler from './optimizations.ts';
@@ -60,6 +64,8 @@ app.get('/api/results/:id', (req, res) => {
 });
 
 app.post('/api/generate-calendar', wrap(generateCalendarHandler));
+
+// Users route - accepting ALL methods
 app.all('/api/users', wrap(usersHandler));
 
 app.get('/api/reports/generate', wrap(reportHandler));
@@ -76,5 +82,6 @@ app.listen(PORT, () => {
   - DELETE /api/assignments/clear
   - GET /api/status/:id
   - GET /api/results/:id
+  - GET/POST/PUT/DELETE /api/users  <-- VERIFIQUE SE ESTA LINHA APARECE
   `);
 });

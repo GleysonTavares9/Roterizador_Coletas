@@ -2,17 +2,20 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req: any, res: any) {
+    const method = req.method?.toUpperCase();
+    console.log(`[API/USERS] Recebido pedido: ${method}`);
+
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    if (req.method === 'OPTIONS') {
+    if (method === 'OPTIONS') {
         res.status(200).end();
         return;
     }
 
     const supabaseUrl = process.env.SUPABASE_URL || '';
-    const supabaseKey = process.env.SUPABASE_KEY || ''; // Deve ser a service_role key
+    const supabaseKey = process.env.SUPABASE_KEY || '';
 
     if (!supabaseUrl || !supabaseKey) {
         return res.status(500).json({ error: 'Configuração do Supabase ausente no servidor.' });
@@ -25,7 +28,7 @@ export default async function handler(req: any, res: any) {
         }
     });
 
-    if (req.method === 'GET') {
+    if (method === 'GET') {
         try {
             const { data: profiles, error: profileError } = await supabaseAdmin
                 .from('user_profiles')
@@ -34,7 +37,6 @@ export default async function handler(req: any, res: any) {
 
             if (profileError) throw profileError;
 
-            // Buscar emails do auth.users
             const { data: { users }, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
 
             if (usersError) throw usersError;
@@ -53,24 +55,16 @@ export default async function handler(req: any, res: any) {
         }
     }
 
-    if (req.method === 'POST') {
+    if (method === 'POST') {
         try {
             const { email, password, full_name, role, phone } = req.body;
-
-            if (!email || !password || !full_name || !role) {
-                return res.status(400).json({ error: 'Campos obrigatórios: email, password, full_name, role.' });
-            }
-
-            // 1. Criar usuário no Auth
             const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
                 email,
                 password,
                 email_confirm: true
             });
-
             if (authError) throw authError;
 
-            // 2. Criar perfil na tabela user_profiles
             const { error: profileError } = await supabaseAdmin
                 .from('user_profiles')
                 .insert({
@@ -82,17 +76,49 @@ export default async function handler(req: any, res: any) {
                 });
 
             if (profileError) {
-                // Se der erro no perfil, tentar remover o usuário do auth para não ficar órfão
                 await supabaseAdmin.auth.admin.deleteUser(authUser.user.id);
                 throw profileError;
             }
-
-            return res.status(200).json({ message: 'Usuário criado com sucesso!', user: authUser.user });
+            return res.status(200).json({ message: 'Usuário criado!' });
         } catch (error: any) {
-            console.error('Erro ao criar usuário:', error);
             return res.status(500).json({ error: error.message });
         }
     }
 
-    return res.status(405).json({ error: 'Método não permitido.' });
+    if (method === 'PUT') {
+        try {
+            console.log('[API/USERS] Processando atualização de usuário...');
+            const { id, full_name, role, phone, password } = req.body;
+            if (!id) return res.status(400).json({ error: 'ID obrigatório' });
+
+            const { error: profileError } = await supabaseAdmin
+                .from('user_profiles')
+                .update({ full_name, role, phone, updated_at: new Date().toISOString() })
+                .eq('id', id);
+
+            if (profileError) throw profileError;
+
+            if (password) {
+                const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(id, { password });
+                if (authError) throw authError;
+            }
+
+            return res.status(200).json({ message: 'Atualizado!' });
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    if (method === 'DELETE') {
+        try {
+            const { id } = req.query;
+            const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
+            if (authError) throw authError;
+            return res.status(200).json({ message: 'Removido!' });
+        } catch (error: any) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    return res.status(405).json({ error: `Método ${method} não permitido.` });
 }

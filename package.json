@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "api": "tsx api/dev-server.ts"
+    "api": "tsx --watch api/dev-server.ts"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",

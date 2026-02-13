@@ -13,6 +13,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [userRole, setUserRole] = useState<string | null>(null);
 
     useEffect(() => {
         loadUserProfile();
@@ -24,7 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             if (user) {
                 const { data: profile } = await supabase
                     .from('user_profiles')
-                    .select('full_name, avatar_url')
+                    .select('full_name, avatar_url, role')
                     .eq('id', user.id)
                     .single();
 
@@ -41,6 +42,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     }
                     if (profile.avatar_url) {
                         setAvatarUrl(profile.avatar_url);
+                    }
+                    if (profile.role) {
+                        setUserRole(profile.role);
                     }
                 } else {
                     setUserName(user.email?.split('@')[0] || 'Usuário');
@@ -83,7 +87,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             title: 'Conta',
             items: [
                 { name: 'Perfil', icon: User, path: '/perfil' },
-                { name: 'Usuários', icon: Users, path: '/usuarios' },
+                ...(userRole === 'admin' ? [{ name: 'Usuários', icon: Users, path: '/usuarios' }] : []),
             ]
         }
     ];
@@ -172,7 +176,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         </div>
                         <div className="flex-1 text-left min-w-0">
                             <p className="text-sm font-medium truncate" title={userName}>{userName}</p>
-                            <p className="text-xs text-muted-foreground">Admin</p>
+                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">
+                                {userRole === 'admin' ? 'Administrador' : userRole === 'manager' ? 'Gerente' : 'Operador'}
+                            </p>
                         </div>
                     </button>
 
@@ -224,7 +230,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             </div>
                             <div className="flex-1 text-left overflow-hidden">
                                 <p className="text-sm font-bold truncate">{userName}</p>
-                                <p className="text-xs text-muted-foreground">Admin</p>
+                                <p className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">
+                                    {userRole === 'admin' ? 'Administrador' : userRole === 'manager' ? 'Gerente' : 'Operador'}
+                                </p>
                             </div>
                         </button>
 
