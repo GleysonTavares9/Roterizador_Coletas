@@ -53,6 +53,18 @@ export default function LoginPage() {
             if (error) throw error;
 
             if (data.user) {
+                // Verificar se o usuário está bloqueado
+                const { data: profile } = await supabase
+                    .from('user_profiles')
+                    .select('is_blocked')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (profile?.is_blocked) {
+                    await supabase.auth.signOut();
+                    throw new Error('🚫 Seu acesso foi bloqueado pelo administrador.');
+                }
+
                 navigate('/dashboard');
             }
         } catch (err: any) {

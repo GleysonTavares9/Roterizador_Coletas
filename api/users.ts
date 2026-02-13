@@ -88,12 +88,15 @@ export default async function handler(req: any, res: any) {
     if (method === 'PUT') {
         try {
             console.log('[API/USERS] Processando atualização de usuário...');
-            const { id, full_name, role, phone, password } = req.body;
+            const { id, full_name, role, phone, password, is_blocked } = req.body;
             if (!id) return res.status(400).json({ error: 'ID obrigatório' });
+
+            const updateData: any = { full_name, role, phone, updated_at: new Date().toISOString() };
+            if (is_blocked !== undefined) updateData.is_blocked = is_blocked;
 
             const { error: profileError } = await supabaseAdmin
                 .from('user_profiles')
-                .update({ full_name, role, phone, updated_at: new Date().toISOString() })
+                .update(updateData)
                 .eq('id', id);
 
             if (profileError) throw profileError;

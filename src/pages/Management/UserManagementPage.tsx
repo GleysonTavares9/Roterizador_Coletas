@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, UserPlus, Mail, Shield, Phone, Loader2, Trash2, Search, AlertTriangle, Edit2, X, Save } from 'lucide-react';
+import { Users, UserPlus, Mail, Shield, Phone, Loader2, Trash2, Search, AlertTriangle, Edit2, X, Save, Ban, CheckCircle } from 'lucide-react';
 import { API_URL } from '@/config';
 import { supabase } from '@/services/supabase';
 import { useNavigate } from 'react-router-dom';
@@ -404,9 +404,14 @@ export default function UserManagementPage() {
                                                 </tr>
                                             ) : (
                                                 filteredUsers.map((u) => (
-                                                    <tr key={u.id} className="border-b hover:bg-slate-50/50 transition-colors">
-                                                        <td className="py-3 px-4 font-medium">{u.full_name}</td>
-                                                        <td className="py-3 px-4 text-muted-foreground">{u.email}</td>
+                                                    <tr key={u.id} className={`border-b hover:bg-slate-50/50 transition-colors ${u.is_blocked ? 'bg-orange-50/30 text-slate-400' : ''}`}>
+                                                        <td className="py-3 px-4 font-medium">
+                                                            <div className="flex items-center gap-2">
+                                                                {u.full_name}
+                                                                {u.is_blocked && <span className="text-[9px] bg-orange-100 text-orange-700 px-1.5 rounded uppercase font-bold">Bloqueado</span>}
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-3 px-4">{u.email}</td>
                                                         <td className="py-3 px-4">
                                                             <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
                                                                 u.role === 'manager' ? 'bg-blue-100 text-blue-700' :
@@ -415,9 +420,35 @@ export default function UserManagementPage() {
                                                                 {u.role === 'admin' ? 'Adm' : u.role === 'manager' ? 'Gerente' : 'Operador'}
                                                             </span>
                                                         </td>
-                                                        <td className="py-3 px-4 text-muted-foreground">{u.phone || '-'}</td>
+                                                        <td className="py-3 px-4">{u.phone || '-'}</td>
                                                         <td className="py-3 px-4 text-right">
                                                             <div className="flex justify-end gap-2">
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    className={u.is_blocked ? "text-green-600 hover:text-green-700 hover:bg-green-50" : "text-orange-600 hover:text-orange-700 hover:bg-orange-50"}
+                                                                    onClick={async () => {
+                                                                        if (!confirm(`Tem certeza que deseja ${u.is_blocked ? 'desbloquear' : 'bloquear'} o acesso de ${u.full_name}?`)) return;
+                                                                        try {
+                                                                            const response = await fetch(`${API_URL}/api/users`, {
+                                                                                method: 'PUT',
+                                                                                headers: { 'Content-Type': 'application/json' },
+                                                                                body: JSON.stringify({ id: u.id, is_blocked: !u.is_blocked })
+                                                                            });
+                                                                            if (response.ok) {
+                                                                                alert(`✅ Usuário ${u.is_blocked ? 'desbloqueado' : 'bloqueado'}!`);
+                                                                                fetchUsers();
+                                                                            } else {
+                                                                                throw new Error('Erro ao processar');
+                                                                            }
+                                                                        } catch (err: any) {
+                                                                            alert('❌ Erro: ' + err.message);
+                                                                        }
+                                                                    }}
+                                                                    title={u.is_blocked ? "Desbloquear" : "Bloquear"}
+                                                                >
+                                                                    {u.is_blocked ? <CheckCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
+                                                                </Button>
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"

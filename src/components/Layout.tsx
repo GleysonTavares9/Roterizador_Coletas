@@ -25,9 +25,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
             if (user) {
                 const { data: profile } = await supabase
                     .from('user_profiles')
-                    .select('full_name, avatar_url, role')
+                    .select('full_name, avatar_url, role, is_blocked')
                     .eq('id', user.id)
                     .single();
+
+                if (profile?.is_blocked) {
+                    await supabase.auth.signOut();
+                    navigate('/login');
+                    alert('🚫 Seu acesso foi bloqueado pelo administrador.');
+                    return;
+                }
 
                 if (profile) {
                     if (profile.full_name) {
