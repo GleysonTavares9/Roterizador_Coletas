@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "api/*.ts": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/status/:id",
+      "destination": "/api/status"
+    },
+    {
+      "source": "/api/results/:id",
+      "destination": "/api/results"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

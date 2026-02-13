@@ -1,0 +1,92 @@
+    // --- VOICE CALL LOGIC ---
+    const [callStatus, setCallStatus] = useState<'idle' | 'dialing' | 'incoming' | 'connected'>('idle');
+    const [callMuted, setCallMuted] = useState(false);
+    const pcRef = useRef<RTCPeerConnection | null>(null);
+    const localStreamRef = useRef<MediaStream | null>(null);
+    const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
+    const candidatesQueue = useRef<RTCIceCandidate[]>([]);
+    
+    // Low latency config
+    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    const mediaConstraints = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, latency: 0 } };
+
+    useEffect(() => {
+        if (!routeId) return;
+        const channel = supabase.channel(`room_${routeId}`)
+            .on('broadcast', { event: 'voice_offer' }, async ({ payload }) => {
+                if (payload.sdp && callStatus === 'idle') {
+                    setCallStatus('incoming');
+                    (window as any).pendingOffer = payload.sdp;
+                }
+            })
+            .on('broadcast', { event: 'voice_answer' }, async ({ payload }) => {
+                if (payload.sdp && pcRef.current && pcRef.current.signalingState !== 'stable') {
+                    await pcRef.current.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+                    setCallStatus('connected');
+                }
+            })
+            .on('broadcast', { event: 'voice_candidate' }, async ({ payload }) => {
+                const cand = payload.candidate ? new RTCIceCandidate(payload.candidate) : null;
+                if (cand) {
+                    if (pcRef.current && pcRef.current.remoteDescription) await pcRef.current.addIceCandidate(cand);
+                    else candidatesQueue.current.push(cand);
+                }
+            })
+            .on('broadcast', { event: 'voice_end' }, () => {
+                endCall(false);
+            })
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); endCall(false); }
+    }, [routeId, callStatus]);
+
+    const setupPC = async () => {
+         const stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+         localStreamRef.current = stream;
+         const pc = new RTCPeerConnection(rtcConfig);
+         pcRef.current = pc;
+         stream.getTracks().forEach(t => pc.addTrack(t, stream));
+         
+         pc.ontrack = (e) => {
+             if (remoteAudioRef.current && e.streams[0]) remoteAudioRef.current.srcObject = e.streams[0];
+         };
+         
+         pc.onicecandidate = (e) => {
+             if (e.candidate) supabase.channel(`room_${routeId}`).send({ type: 'broadcast', event: 'voice_candidate', payload: { candidate: e.candidate } });
+         };
+         return pc;
+    }
+
+    const startCall = async () => {
+        try {
+            setCallStatus('dialing');
+            const pc = await setupPC();
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            await supabase.channel(`room_${routeId}`).send({ type: 'broadcast', event: 'voice_offer', payload: { sdp: offer } });
+        } catch(e) { console.error(e); endCall(); }
+    }
+
+    const acceptCall = async () => {
+        try {
+            const pc = await setupPC();
+            const offer = (window as any).pendingOffer;
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+            
+            while (candidatesQueue.current.length) {
+                await pc.addIceCandidate(candidatesQueue.current.shift()!);
+            }
+            
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            await supabase.channel(`room_${routeId}`).send({ type: 'broadcast', event: 'voice_answer', payload: { sdp: answer } });
+            setCallStatus('connected');
+        } catch (err) { endCall(); }
+    };
+
+    const endCall = (notify = true) => {
+        setCallStatus('idle');
+        if (pcRef.current) { pcRef.current.close(); pcRef.current = null; }
+        if (localStreamRef.current) { localStreamRef.current.getTracks().forEach(t => t.stop()); localStreamRef.current = null; }
+        if (notify && routeId) supabase.channel(`room_${routeId}`).send({ type: 'broadcast', event: 'voice_end', payload: {} });
+    };
