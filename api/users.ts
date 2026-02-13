@@ -91,7 +91,10 @@ export default async function handler(req: any, res: any) {
             const { id, full_name, role, phone, password, is_blocked } = req.body;
             if (!id) return res.status(400).json({ error: 'ID obrigatório' });
 
-            const updateData: any = { full_name, role, phone, updated_at: new Date().toISOString() };
+            const updateData: any = { updated_at: new Date().toISOString() };
+            if (full_name !== undefined) updateData.full_name = full_name;
+            if (role !== undefined) updateData.role = role;
+            if (phone !== undefined) updateData.phone = phone;
             if (is_blocked !== undefined) updateData.is_blocked = is_blocked;
 
             const { error: profileError } = await supabaseAdmin
