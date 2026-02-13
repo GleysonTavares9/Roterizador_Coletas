@@ -19,6 +19,7 @@ import RouteAssignmentPage from './pages/Monitoring/RouteAssignmentPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import SupportPage from './pages/SupportPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
+import UserManagementPage from './pages/Management/UserManagementPage'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from './services/supabase'
@@ -72,6 +73,7 @@ function App() {
         <Route path="/custos" element={<ProtectedRoute><Layout><CostsPage /></Layout></ProtectedRoute>} />
         <Route path="/dados" element={<ProtectedRoute><Layout><DataInputPage /></Layout></ProtectedRoute>} />
         <Route path="/perfil" element={<ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>} />
+        <Route path="/usuarios" element={<ProtectedRoute><Layout><UserManagementPage /></Layout></ProtectedRoute>} />
         <Route path="/privacy" element={<ProtectedRoute><Layout><PrivacyPolicyPage /></Layout></ProtectedRoute>} />
         <Route path="/support" element={<ProtectedRoute><Layout><SupportPage /></Layout></ProtectedRoute>} />
         <Route path="/terms" element={<ProtectedRoute><Layout><TermsOfServicePage /></Layout></ProtectedRoute>} />

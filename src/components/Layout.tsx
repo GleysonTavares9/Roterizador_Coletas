@@ -83,6 +83,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             title: 'Conta',
             items: [
                 { name: 'Perfil', icon: User, path: '/perfil' },
+                { name: 'Usuários', icon: Users, path: '/usuarios' },
             ]
         }
     ];
