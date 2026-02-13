@@ -1,6 +1,5 @@
 
-// Detecta se estamos rodando em localhost
-const isLocalhost = typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-
-export const API_URL = isLocalhost ? 'http://localhost:5001' : '';
+// Nota: Deixamos como string vazia para usar caminhos relativos.
+// Em desenvolvimento, o Vite usa o proxy definido em vite.config.ts para redirecionar para localhost:5001.
+// Em produção (Vercel), ele usa automaticamente a URL do ambiente.
+export const API_URL = '';
