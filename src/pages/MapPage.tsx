@@ -84,7 +84,7 @@ export default function MapPage() {
                 .order('date', { ascending: true }); // Ordenar por data garante que pegamos a mais próxima
 
             if (calendarEvents && calendarEvents.length > 0) {
-                console.log(`Encontrados ${calendarEvents.length} eventos futuros no calendário.`);
+//                 console.log(`Encontrados ${calendarEvents.length} eventos futuros no calendário.`);
 
                 // Deduplicar: Pegar apenas a PRIMEIRA (mais próxima) ocorrência para cada cliente único
                 const uniquePointsMap = new Map();
@@ -98,7 +98,7 @@ export default function MapPage() {
                 });
 
                 const uniquePoints = Array.from(uniquePointsMap.values());
-                console.log(`Pontos únicos para o mapa: ${uniquePoints.length}`);
+//                 console.log(`Pontos únicos para o mapa: ${uniquePoints.length}`);
 
                 // Formatar dados para o Mapa
                 const formattedData = uniquePoints.map(item => {
@@ -353,9 +353,9 @@ export default function MapPage() {
                 filteredDepots = validDepots;
             }
 
-            console.log(`Gerando mapa para Unidade: ${selectedUnit}`);
-            console.log(`Pontos: ${filteredPoints.length}, Rotas: ${selectedRoutes.length}`);
-            console.log(`Depósitos enviados (${filteredDepots.length}):`, filteredDepots.map(d => d.name || d.unit_name));
+//             console.log(`Gerando mapa para Unidade: ${selectedUnit}`);
+//             console.log(`Pontos: ${filteredPoints.length}, Rotas: ${selectedRoutes.length}`);
+//             console.log(`Depósitos enviados (${filteredDepots.length}):`, filteredDepots.map(d => d.name || d.unit_name));
 
             const response = await fetch(`${API_URL}/api/generate-map`, {
                 method: 'POST',

@@ -114,7 +114,7 @@ export class OptimizationService {
             const lastDay = new Date(yearNum, monthNum, 0).getDate();
             endDate = `${year}-${month.padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
 
-            console.log(`📅 Filtering events between ${startDate} and ${endDate}`);
+//             console.log(`📅 Filtering events between ${startDate} and ${endDate}`);
         }
 
         // Fetch with pagination
@@ -150,7 +150,7 @@ export class OptimizationService {
             offset += batchSize;
         }
 
-        console.log(`✅ Total events loaded from Supabase: ${allEvents.length}`);
+//         console.log(`✅ Total events loaded from Supabase: ${allEvents.length}`);
 
         return allEvents.map(e => ({
             Data: e.date,

@@ -82,12 +82,12 @@ export default function DriverRouteExecution() {
         const channel = supabase.channel(`room_${routeId}`)
             // Listen for Calls (Signaling)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'calls', filter: `route_id=eq.${routeId}` }, async (payload) => {
-                console.log('Call Signal:', payload);
+//                 console.log('Call Signal:', payload);
                 const call = payload.new as any;
 
                 // Incoming Call (Offer) - from base
                 if (payload.eventType === 'INSERT' && call.status === 'calling' && call.from_user === 'base') {
-                    console.log('📞 Recebendo chamada da base!');
+//                     console.log('📞 Recebendo chamada da base!');
                     setCallStatus('incoming');
                     (window as any).incomingCallId = call.id;
                     (window as any).pendingOffer = call.offer;
@@ -96,7 +96,7 @@ export default function DriverRouteExecution() {
                 // Call Accepted (Answer) - If I am the caller (driver initiated)
                 if (payload.eventType === 'UPDATE' && call.status === 'answered' && pcRef.current && call.answer) {
                     if (call.from_user !== 'base') { // I (driver) initiated
-                        console.log('Setting Remote Description (Answer from base)');
+//                         console.log('Setting Remote Description (Answer from base)');
                         await pcRef.current.setRemoteDescription(new RTCSessionDescription(call.answer));
                         setCallStatus('connected');
                     }
@@ -109,7 +109,7 @@ export default function DriverRouteExecution() {
             })
             .subscribe((status) => {
                 if (status === 'SUBSCRIBED') {
-                    console.log("Voice Channel Subscribed");
+//                     console.log("Voice Channel Subscribed");
                     setVoiceReady(true);
                 }
             });
@@ -205,7 +205,7 @@ export default function DriverRouteExecution() {
 
             // Monitor Connection Health
             pc.oniceconnectionstatechange = () => {
-                console.log("ICE State:", pc.iceConnectionState);
+//                 console.log("ICE State:", pc.iceConnectionState);
                 if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
                     // Optional: Attempt restartIce() here if supported
                     console.warn("ICE Connection unstable or failed.");
@@ -218,7 +218,7 @@ export default function DriverRouteExecution() {
 
             pc.ontrack = (e) => {
                 if (remoteAudioRef.current && e.streams[0]) {
-                    console.log("Remote track received");
+//                     console.log("Remote track received");
                     remoteAudioRef.current.srcObject = e.streams[0];
                 }
             };
@@ -252,7 +252,7 @@ export default function DriverRouteExecution() {
     };
 
     const startCall = async () => {
-        console.log("startCall() invoked");
+//         console.log("startCall() invoked");
         if (!routeId) {
             console.error("No routeId found");
             alert("Erro: Rota não identificada");
@@ -260,9 +260,9 @@ export default function DriverRouteExecution() {
         }
         try {
             setCallStatus('dialing');
-            console.log("Status set to dialing");
+//             console.log("Status set to dialing");
             const pc = await setupPC();
-            console.log("PeerConnection setup complete");
+//             console.log("PeerConnection setup complete");
 
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
@@ -270,7 +270,7 @@ export default function DriverRouteExecution() {
             // Wait for ICE candidates to be gathered
             await gatherCandidates(pc);
 
-            console.log("Sending offer via database...");
+//             console.log("Sending offer via database...");
 
             // Get driver ID from route or localStorage
             const driverId = route?.driver_id || localStorage.getItem('driver_id') || 'driver';
@@ -293,7 +293,7 @@ export default function DriverRouteExecution() {
 
             if (data) {
                 (window as any).currentCallId = data.id;
-                console.log("Offer sent successfully ID:", data.id);
+//                 console.log("Offer sent successfully ID:", data.id);
             }
         } catch (e) {
             console.error("startCall error:", e);
@@ -344,7 +344,7 @@ export default function DriverRouteExecution() {
         const callId = (window as any).currentCallId || (window as any).incomingCallId;
 
         if (callId && notify) {
-            console.log('Ending call in DB:', callId);
+//             console.log('Ending call in DB:', callId);
             await supabase.from('calls').update({ status: 'ended' }).eq('id', callId);
         }
 

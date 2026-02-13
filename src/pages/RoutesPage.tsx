@@ -77,11 +77,11 @@ export default function RoutesPage() {
 
     const loadSummaryData = async () => {
         try {
-            console.log('🔍 Carregando resumo para data:', filters.date);
+//             console.log('🔍 Carregando resumo para data:', filters.date);
             const targetDate = filters.date;
 
             // Buscar rotas da tabela 'routes' direto pela DATA (mais robusto)
-            console.log(' Buscando rotas da tabela routes para data:', targetDate);
+//             console.log(' Buscando rotas da tabela routes para data:', targetDate);
             const { data: routesData, error: routesError } = await supabase
                 .from('routes')
                 .select('*, route_points(*)')
@@ -94,9 +94,9 @@ export default function RoutesPage() {
             }
 
             const routes = routesData || [];
-            console.log('🚛 Rotas encontradas:', routes.length);
+//             console.log('🚛 Rotas encontradas:', routes.length);
             if (routes.length > 0) {
-                console.log('📋 Primeira rota:', routes[0]);
+//                 console.log('📋 Primeira rota:', routes[0]);
             }
 
             // Buscar fechamentos do dia
@@ -110,7 +110,7 @@ export default function RoutesPage() {
                 // Continua mesmo com erro, apenas não terá dados de fechamento
             }
 
-            console.log('✅ Fechamentos encontrados:', closures?.length || 0);
+//             console.log('✅ Fechamentos encontrados:', closures?.length || 0);
 
             // Combinar dados
             const summary: RouteSummary[] = routes.map((route: any) => {
@@ -142,7 +142,7 @@ export default function RoutesPage() {
                     status: closure ? 'Concluído' : 'Pendente'
                 };
 
-                console.log('📦 Item resumo:', summaryItem);
+//                 console.log('📦 Item resumo:', summaryItem);
                 return summaryItem;
             });
 
@@ -158,7 +158,7 @@ export default function RoutesPage() {
                 filtered = filtered.filter(s => s.status === filters.status);
             }
 
-            console.log('✅ Resumo final:', filtered.length, 'itens');
+//             console.log('✅ Resumo final:', filtered.length, 'itens');
             setSummaryData(filtered);
 
         } catch (error) {

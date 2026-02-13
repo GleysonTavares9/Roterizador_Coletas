@@ -50,7 +50,7 @@ export function GlobalCallHandler() {
             }, async (payload) => {
                 const call = payload.new as any;
                 if (call.status === 'calling') {
-                    console.log("📞 Chamada Recebida:", call);
+//                     console.log("📞 Chamada Recebida:", call);
 
                     // Verifica se já não estamos em chamada
                     if (callStatus !== 'idle') {
@@ -111,12 +111,12 @@ export function GlobalCallHandler() {
                 // If this update relates to our current call
                 if (incomingCall && call.id === incomingCall.id) {
                     if (call.status === 'ended' || call.status === 'canceled' || call.status === 'rejected') {
-                        console.log(`Call ${call.status} remotely`);
+//                         console.log(`Call ${call.status} remotely`);
                         cleanupCall();
                     } else if (call.status === 'answered') {
                         // If we are still ringing, someone else answered
                         if (callStatus === 'ringing') {
-                            console.log("Call answered elsewhere");
+//                             console.log("Call answered elsewhere");
                             cleanupCall();
                         }
                     }
@@ -132,7 +132,7 @@ export function GlobalCallHandler() {
                 const call = payload.new as any;
                 // If driver rejected our outgoing call
                 if (call.status === 'rejected' || call.status === 'ended') {
-                    console.log(`Outgoing call ${call.status} by driver`);
+//                     console.log(`Outgoing call ${call.status} by driver`);
                     // If we have an active call with this ID, clean it up
                     if (incomingCall && call.id === incomingCall.id) {
                         cleanupCall();
@@ -162,7 +162,7 @@ export function GlobalCallHandler() {
 
                 if (data && data.length > 0) {
                     const call = data[0];
-                    console.log("📞 Polling found call:", call.id);
+//                     console.log("📞 Polling found call:", call.id);
                     setIncomingCall({
                         id: call.id,
                         route_id: call.route_id,
@@ -211,7 +211,7 @@ export function GlobalCallHandler() {
                     .single();
 
                 if (data && (data.status === 'rejected' || data.status === 'ended' || data.status === 'canceled')) {
-                    console.log(`📞 Polling detected outgoing call ${data.status}`);
+//                     console.log(`📞 Polling detected outgoing call ${data.status}`);
                     cleanupCall();
                 }
             } catch (e) {
@@ -242,7 +242,7 @@ export function GlobalCallHandler() {
 
             // Auto-reject if not answered in 45s
             ringTimeoutRef.current = setTimeout(() => {
-                console.log("⏰ Ringing timeout (45s) - Auto Rejecting");
+//                 console.log("⏰ Ringing timeout (45s) - Auto Rejecting");
                 logCallToChat("📞 Chamada Perdida na Central (Timeout)");
                 rejectCall(true); // true = auto (timeout)
             }, 45000);

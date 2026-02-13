@@ -20,7 +20,7 @@ export default function RouteAssignmentPage() {
             .on('postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'routes', filter: `route_date=eq.${selectedDate}` },
                 (payload) => {
-                    console.log('Realtime update received:', payload);
+//                     console.log('Realtime update received:', payload);
                     setRoutes(prev => prev.map(r => r.id === payload.new.id ? { ...r, ...payload.new } : r));
                 }
             )

@@ -271,8 +271,8 @@ export default function DataInputPage() {
 
         if (type === 'frota') {
             const firstRow = uploadedData[0];
-            console.log("Processando Frota. Colunas encontradas:", Object.keys(firstRow));
-            console.log("Amostra da linha 1 raw:", JSON.stringify(firstRow, null, 2));
+//             console.log("Processando Frota. Colunas encontradas:", Object.keys(firstRow));
+//             console.log("Amostra da linha 1 raw:", JSON.stringify(firstRow, null, 2));
 
             processed = uploadedData.map(row => {
                 // Determine capacity - Prioritize C/B (With Drums) for Optimization as requested
@@ -296,7 +296,7 @@ export default function DataInputPage() {
                 };
             }).filter(v => v.plate && v.plate.length > 3);
 
-            console.log("Frota processada (Amostra):", JSON.stringify(processed[0], null, 2));
+//             console.log("Frota processada (Amostra):", JSON.stringify(processed[0], null, 2));
         }
         else if (type === 'unidades') {
             processed = uploadedData.map(row => {
@@ -318,8 +318,8 @@ export default function DataInputPage() {
         }
         else if (type === 'pontos') {
             const firstRow = uploadedData[0];
-            console.log("Processando Pontos. Colunas encontradas:", Object.keys(firstRow));
-            console.log("Amostra da linha 1 raw:", JSON.stringify(firstRow, null, 2));
+//             console.log("Processando Pontos. Colunas encontradas:", Object.keys(firstRow));
+//             console.log("Amostra da linha 1 raw:", JSON.stringify(firstRow, null, 2));
 
             processed = uploadedData.map(row => {
                 const { lat, lon } = extractCoords(row);
@@ -340,7 +340,7 @@ export default function DataInputPage() {
                 };
                 return p;
             }).filter(p => p.client_name);
-            console.log("Pontos processados (Amostra):", JSON.stringify(processed[0], null, 2));
+//             console.log("Pontos processados (Amostra):", JSON.stringify(processed[0], null, 2));
         }
 
         if (processed.length === 0 && uploadedData.length > 0) {
@@ -352,7 +352,7 @@ export default function DataInputPage() {
             ...prev,
             [type]: processed
         }));
-        console.log(`Dados processados para ${type}: `, processed.length, 'registros válidos');
+//         console.log(`Dados processados para ${type}: `, processed.length, 'registros válidos');
     };
 
     const saveDataToSupabase = async () => {

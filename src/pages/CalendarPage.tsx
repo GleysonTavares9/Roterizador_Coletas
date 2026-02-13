@@ -252,7 +252,7 @@ export default function CalendarPage() {
             }
 
             if (allData.length === 0) {
-                console.log('Nenhum dado encontrado no banco para este período.');
+//                 console.log('Nenhum dado encontrado no banco para este período.');
                 setCalendarData([]);
                 return;
             }
@@ -280,7 +280,7 @@ export default function CalendarPage() {
             });
 
             setCalendarData(formattedData);
-            console.log(`${formattedData.length} registros carregados do banco de dados.`);
+//             console.log(`${formattedData.length} registros carregados do banco de dados.`);
 
         } catch (error: any) {
             console.error('Load error:', error);

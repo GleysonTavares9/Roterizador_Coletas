@@ -85,7 +85,7 @@ export default function FleetClosurePage() {
                 // Extrair unidades únicas
                 const uniqueUnits = [...new Set(data.map((v: any) => v.unit_name).filter(Boolean))];
                 setUnits(uniqueUnits as string[]);
-                console.log('✅ Unidades disponíveis:', uniqueUnits);
+                //                 console.log('✅ Unidades disponíveis:', uniqueUnits);
             }
         } catch (error) {
             console.error('Erro ao carregar veículos:', error);
@@ -106,21 +106,21 @@ export default function FleetClosurePage() {
 
     const loadRoutesForDate = async () => {
         try {
-            console.log('🔍 Buscando rotas para data:', formData.closure_date);
-            console.log('📊 Otimizações disponíveis:', optimizations.map(o => ({
-                id: o.id.slice(0, 8),
-                created_at: o.created_at,
-                date: o.created_at.split('T')[0]
-            })));
+            //             console.log('🔍 Buscando rotas para data:', formData.closure_date);
+            // console.log('📊 Otimizações disponíveis:', optimizations.map(o => ({
+            //     id: o.id.slice(0, 8),
+            //     created_at: o.created_at,
+            //     date: o.created_at.split('T')[0]
+            // })));
 
             // Buscar otimização do dia selecionado
             const optimization = optimizations.find(opt => {
                 const optDate = opt.created_at.split('T')[0];
-                console.log(`Comparando: ${optDate} === ${formData.closure_date} = ${optDate === formData.closure_date}`);
+                //                 console.log(`Comparando: ${optDate} === ${formData.closure_date} = ${optDate === formData.closure_date}`);
                 return optDate === formData.closure_date;
             });
 
-            console.log('✅ Otimização encontrada:', optimization ? optimization.id.slice(0, 8) : 'Nenhuma');
+            //             console.log('✅ Otimização encontrada:', optimization ? optimization.id.slice(0, 8) : 'Nenhuma');
 
             if (optimization) {
                 // MUDANÇA: Buscar direto do Supabase para garantir dados completos (KM, etc)
@@ -143,7 +143,7 @@ export default function FleetClosurePage() {
 
                     // Normalizar data do formulário (YYYY-MM-DD)
                     const targetDate = formData.closure_date;
-                    console.log(`📅 Filtrando fechamentos para data: ${targetDate}`);
+                    //                     console.log(`📅 Filtrando fechamentos para data: ${targetDate}`);
 
                     // Filtrar rotas que já foram fechadas
                     const closedPlates = closures
@@ -153,23 +153,23 @@ export default function FleetClosurePage() {
                         })
                         .map(c => c.vehicle_plate.trim().toUpperCase());
 
-                    console.log('🚫 Placas fechadas no banco:', closedPlates);
+                    //                     console.log('🚫 Placas fechadas no banco:', closedPlates);
 
                     const availableRoutes = allRoutes.filter(
                         (route: any) => {
                             const plate = (route.vehicle_plate || route.vehicle || '').trim().toUpperCase();
                             const isClosed = closedPlates.includes(plate);
-                            if (isClosed) console.log(`🚫 Filtrando rota fechada: ${plate}`);
+                            // if (isClosed) console.log(`🚫 Filtrando rota fechada: ${plate}`);
                             return !isClosed;
                         }
                     );
 
                     setRoutesForDate(availableRoutes);
-                    console.log('✅ Rotas disponíveis:', availableRoutes.length, 'de', allRoutes.length);
-                    console.log('🚫 Placas já fechadas:', closedPlates);
+                    //                     console.log('✅ Rotas disponíveis:', availableRoutes.length, 'de', allRoutes.length);
+                    //                     console.log('🚫 Placas já fechadas:', closedPlates);
                 }
             } else {
-                console.log('⚠️ Nenhuma otimização encontrada para', formData.closure_date);
+                //                 console.log('⚠️ Nenhuma otimização encontrada para', formData.closure_date);
                 setRoutesForDate([]);
             }
         } catch (error) {
@@ -221,11 +221,11 @@ export default function FleetClosurePage() {
     };
 
     const handleSelectRoute = (route: any) => {
-        console.log('🎯 Rota selecionada:', route);
+        //         console.log('🎯 Rota selecionada:', route);
 
         // O campo pode ser 'vehicle' ou 'vehicle_plate'
         const vehiclePlate = route.vehicle_plate || route.vehicle || '';
-        console.log('📋 Placa da rota:', vehiclePlate);
+        //         console.log('📋 Placa da rota:', vehiclePlate);
 
         // Preencher formulário com dados da rota
         const newFormData = {
@@ -237,7 +237,7 @@ export default function FleetClosurePage() {
             notes: `Rota com ${route.points?.length || 0} pontos. ${route.final_km ? 'KM obtido do motorista.' : 'KM sugerido pelo planejamento.'}`
         };
 
-        console.log('✅ Novo formData:', newFormData);
+        //         console.log('✅ Novo formData:', newFormData);
         setFormData(newFormData);
 
         // Scroll suave para o formulário
@@ -254,10 +254,10 @@ export default function FleetClosurePage() {
 
         setLoading(true);
         try {
-            console.log('💾 Salvando fechamento:', formData);
+            //             console.log('💾 Salvando fechamento:', formData);
 
             // Salvar direto no Supabase (km_traveled é calculado automaticamente)
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('fleet_closures')
                 .insert([{
                     vehicle_plate: formData.vehicle_plate,
@@ -272,7 +272,7 @@ export default function FleetClosurePage() {
                 console.error('❌ Erro do Supabase:', error);
                 alert('❌ Erro: ' + error.message);
             } else {
-                console.log('✅ Fechamento salvo:', data);
+                //                 console.log('✅ Fechamento salvo:', data);
                 alert('✅ Fechamento registrado com sucesso!');
                 await loadClosures(); // Recarregar fechamentos
                 await loadRoutesForDate(); // Recarregar rotas para remover a fechada
@@ -355,7 +355,7 @@ export default function FleetClosurePage() {
                                     (v.plate || '').trim().toUpperCase() === (route.vehicle_plate || route.vehicle || '').trim().toUpperCase()
                                 );
                                 // Debug COMPLETO
-                                console.log('📦 Rota Objeto Completo:', route);
+                                //                                 console.log('📦 Rota Objeto Completo:', route);
 
                                 return (
                                     <button

@@ -120,7 +120,7 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
 
     // Recentrar mapa nas rotas visíveis
     const recenterMap = () => {
-        console.log('🎯 Recentrar clicado');
+        //         console.log('🎯 Recentrar clicado');
 
         // Usar a referência do mapa que já está armazenada
         const map = mapRef.current;
@@ -134,12 +134,12 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
             return;
         }
 
-        console.log('Filtrando rotas...', {
-            total: routesData.routes.length,
-            selectedDates: Array.from(selectedDates),
-            selectedVehicle,
-            visibleRoutes: visibleRoutes.size
-        });
+        //         console.log('Filtrando rotas...', {
+        //             total: routesData.routes.length,
+        //             selectedDates: Array.from(selectedDates),
+        //             selectedVehicle,
+        //             visibleRoutes: visibleRoutes.size
+        //         });
 
         let routesToDraw = routesData.routes.filter((r: any) => {
             const dateStr = String(r.date || '').trim();
@@ -158,7 +158,7 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
             routesToDraw = routesData.routes;
         }
 
-        console.log('Rotas filtradas:', routesToDraw.length);
+        //         console.log('Rotas filtradas:', routesToDraw.length);
 
         const pointsForZoom = routesToDraw.flatMap((r: any) =>
             r.points
@@ -166,13 +166,13 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
                 .map((p: any) => [p.lat, p.lng])
         );
 
-        console.log('Pontos para zoom:', pointsForZoom.length);
+        //         console.log('Pontos para zoom:', pointsForZoom.length);
 
         if (pointsForZoom.length > 0) {
             const bounds = L.latLngBounds(pointsForZoom as [number, number][]);
-            console.log('Aplicando fitBounds...', bounds);
+            //             console.log('Aplicando fitBounds...', bounds);
             map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-            console.log('✅ Mapa recentrado!');
+            //             console.log('✅ Mapa recentrado!');
         } else {
             console.warn('Nenhum ponto válido encontrado para centralizar');
             alert('Nenhum ponto válido encontrado para centralizar o mapa.');
@@ -701,12 +701,12 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
 
                 const cacheKey = runIds.sort().join(',');
                 if (dataCache.current[cacheKey]) {
-                    console.log('🚀 Carregando dados do cache local');
+                    //                     console.log('🚀 Carregando dados do cache local');
                     setRoutesData(dataCache.current[cacheKey]);
                     return;
                 }
 
-                console.log('📡 Buscando dados otimizados do Supabase...');
+                //                 console.log('📡 Buscando dados otimizados do Supabase...');
 
                 // BUSCA PARALELA (Muito mais rápido)
                 const [runsRes, routesRes, depotsRes, unservedRes, vehiclesRes] = await Promise.all([
@@ -1099,7 +1099,7 @@ function RouteMapContent({ runId, availableDates, onDateChange: _onDateChange }:
             const currentRunKey = `${Array.isArray(runId) ? runId.join(',') : runId}_${datesKey}_${selectedVehicle}`;
 
             if (initialBoundsSet.current !== currentRunKey) {
-                console.log('🔄 Centralizando mapa para novos filtros:', currentRunKey);
+                //                 console.log('🔄 Centralizando mapa para novos filtros:', currentRunKey);
                 setTimeout(() => {
                     map.fitBounds(bounds, { padding: [100, 100], maxZoom: 15 });
                     map.invalidateSize();

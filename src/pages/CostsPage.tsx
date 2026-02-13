@@ -50,7 +50,7 @@ export default function CostsPage() {
 
             if (vData) {
                 setVehiclesInfo(vData);
-                console.log('✅ Veículos carregados:', vData.length);
+//                 console.log('✅ Veículos carregados:', vData.length);
             }
 
             // 2. Fetch Costs

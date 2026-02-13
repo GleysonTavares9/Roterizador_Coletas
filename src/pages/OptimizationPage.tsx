@@ -123,11 +123,11 @@ export default function OptimizationPage() {
 
     const fetchOptimizations = async () => {
         try {
-            console.log('Fetching optimizations from API...');
+//             console.log('Fetching optimizations from API...');
             const response = await fetch(`${API_URL}/api/optimizations`);
             if (response.ok) {
                 const data = await response.json();
-                console.log('Optimizations received:', data);
+//                 console.log('Optimizations received:', data);
                 if (data.optimizations && data.optimizations.length > 0) {
                     setAvailableOptimizations(data.optimizations);
 
@@ -237,7 +237,7 @@ export default function OptimizationPage() {
 
             // Do not force filter to today as it might hide the optimizations from the selected period
             // setFilterDate(today); 
-            console.log('Calendar data loaded for current month');
+//             console.log('Calendar data loaded for current month');
 
             alert(`${formattedData.length} eventos de coleta carregados com sucesso!`);
 
@@ -778,7 +778,7 @@ export default function OptimizationPage() {
                                     onChange={(e) => {
                                         const newDate = e.target.value;
                                         setFilterDate(newDate);
-                                        console.log('Filter date changed to:', newDate || 'Todas as Datas');
+//                                         console.log('Filter date changed to:', newDate || 'Todas as Datas');
 
                                         // Filter optimizations for this date/period
                                         const optsOnDate = availableOptimizations.filter(opt => {

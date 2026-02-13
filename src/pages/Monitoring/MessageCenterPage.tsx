@@ -196,7 +196,7 @@ export default function MessageCenterPage() {
     const playNotificationSound = () => {
         try {
             notificationSound.current.currentTime = 0;
-            notificationSound.current.play().catch(e => console.log('Audio play blocked:', e));
+            notificationSound.current.play().catch(() => { });
         } catch (e) {
             console.error('Error playing sound:', e);
         }
@@ -231,7 +231,7 @@ export default function MessageCenterPage() {
                 const call = payload.new as any;
                 // Chamada recebida do motorista
                 if (call.status === 'calling') {
-                    console.log('Recebendo chamada:', call);
+                    //                     console.log('Recebendo chamada:', call);
                     // Salvar no window para acesso global
                     (window as any).incomingCallData = call;
                     (window as any).incomingCallId = call.id;
@@ -665,7 +665,7 @@ function ActiveChatView({ conversation, onBack }: { conversation: ChatConversati
                     const { data } = await supabase.from('calls').select('*').eq('id', id).single();
                     if (data) {
                         if (data.status === 'answered' && data.answer) {
-                            console.log("✅ Chamada atendida pelo motorista!");
+                            //                             console.log("✅ Chamada atendida pelo motorista!");
                             // Conectar SDP
                             if (pcRef.current && pcRef.current.signalingState !== 'stable') {
                                 await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
@@ -691,7 +691,7 @@ function ActiveChatView({ conversation, onBack }: { conversation: ChatConversati
                 if (id) {
                     const { data, error } = await supabase.from('calls').select('status').eq('id', id).single();
                     if (data && data.status !== 'calling') {
-                        console.log("Watchdog: Call status changed remotely:", data.status);
+                        //                         console.log("Watchdog: Call status changed remotely:", data.status);
                         setCallStatus('idle');
                     }
                     if (error || !data) {
@@ -762,7 +762,7 @@ function ActiveChatView({ conversation, onBack }: { conversation: ChatConversati
         const callId = (window as any).currentCallId || (window as any).incomingCallId;
 
         if (callId && notify) {
-            console.log('Ending call in DB:', callId);
+            //             console.log('Ending call in DB:', callId);
             await supabase.from('calls').update({ status: 'ended' }).eq('id', callId);
             if (conversation.route_id) {
                 // Log simplificado
@@ -826,7 +826,7 @@ function ActiveChatView({ conversation, onBack }: { conversation: ChatConversati
 
                 // Timeout 45s para o motorista atender
                 callTimeoutRef.current = setTimeout(() => {
-                    console.log("⏰ Timeout de chamada outgoing (45s)");
+                    //                     console.log("⏰ Timeout de chamada outgoing (45s)");
                     logCallToChat("📞 Motorista não atendeu (Timeout)");
                     endCall(true); // Encerra
                 }, 45000);
@@ -948,7 +948,7 @@ function ActiveChatView({ conversation, onBack }: { conversation: ChatConversati
             })
             // Listen for Calls (Signaling)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'calls', filter: `route_id=eq.${conversation.route_id}` }, async (payload) => {
-                console.log('Call Signal:', payload);
+                //                 console.log('Call Signal:', payload);
                 const call = payload.new as any;
 
                 // Income Call (Offer)
@@ -961,7 +961,7 @@ function ActiveChatView({ conversation, onBack }: { conversation: ChatConversati
                 // Call Accepted (Answer) - If I am the caller
                 if (payload.eventType === 'UPDATE' && call.status === 'answered' && pcRef.current && call.answer) {
                     if (call.from_user === 'base') { // I initiated
-                        console.log('Setting Remote Description (Answer)');
+                        //                         console.log('Setting Remote Description (Answer)');
                         await pcRef.current.setRemoteDescription(new RTCSessionDescription(call.answer));
                         setCallStatus('connected');
                     }
@@ -1000,7 +1000,7 @@ function ActiveChatView({ conversation, onBack }: { conversation: ChatConversati
     // Force Audio Playback on Connect
     useEffect(() => {
         if (callStatus === 'connected' && remoteAudioRef.current) {
-            console.log("Attempting to play remote audio...");
+            //             console.log("Attempting to play remote audio...");
             remoteAudioRef.current.muted = false;
             remoteAudioRef.current.volume = 1.0;
             const playPromise = remoteAudioRef.current.play();

@@ -166,7 +166,7 @@ export default function LiveMonitoringPage() {
         try {
             // Simple beep/ping base64
             const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3'); // Bell Sound
-            audio.play().catch(e => console.log('Audio play failed', e));
+            audio.play().catch(() => { });
         } catch (e) { console.error(e); }
     };
 
@@ -356,7 +356,7 @@ export default function LiveMonitoringPage() {
             .on('postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'routes', filter: `route_date=eq.${selectedDate}` },
                 async (payload) => {
-                    console.log('Global route update:', payload);
+                    //                     console.log('Global route update:', payload);
                     // Instead of full fetch, we can manually update if we have the driver data
                     // But to be safe and get nested driver data, let's trigger a light refetch or update state
                     setRoutes(prev => prev.map(r => {

@@ -47,7 +47,7 @@ export default function Dashboard() {
     const loadDashboardData = async () => {
         setLoading(true);
         try {
-            console.log('🔍 Buscando dados do dashboard para:', filterDate);
+//             console.log('🔍 Buscando dados do dashboard para:', filterDate);
 
             // 1. Buscar otimizações (para pegar o run_id do dia e histórico)
             const { data: optimizations, error: optError } = await supabase
@@ -79,7 +79,7 @@ export default function Dashboard() {
 
             if (!routeError) plannedRoutes = routes || [];
 
-            console.log('📊 Rotas planejadas encontradas:', plannedRoutes.length);
+//             console.log('📊 Rotas planejadas encontradas:', plannedRoutes.length);
 
             // 4. Veículos ativos serão baseados nas rotas do dia
             // const vehiclesCount = plannedRoutes.length;
