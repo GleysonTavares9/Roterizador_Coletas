@@ -30,16 +30,24 @@ export default async function handler(req: any, res: any) {
 
     if (method === 'GET') {
         try {
+            console.log('[API/USERS] Buscando perfis...');
             const { data: profiles, error: profileError } = await supabaseAdmin
                 .from('user_profiles')
                 .select('*')
                 .order('full_name');
 
-            if (profileError) throw profileError;
+            if (profileError) {
+                console.error('[API/USERS] Erro ao buscar perfis:', profileError);
+                throw profileError;
+            }
 
+            console.log(`[API/USERS] ${profiles.length} perfis encontrados. Buscando usuários do Auth...`);
             const { data: { users }, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
 
-            if (usersError) throw usersError;
+            if (usersError) {
+                console.error('[API/USERS] Erro ao listar usuários Auth:', usersError);
+                throw usersError;
+            }
 
             const usersWithEmail = profiles.map(profile => {
                 const authUser = users.find(u => u.id === profile.id);
@@ -51,6 +59,7 @@ export default async function handler(req: any, res: any) {
 
             return res.status(200).json(usersWithEmail);
         } catch (error: any) {
+            console.error('[API/USERS] Erro fatal no GET:', error);
             return res.status(500).json({ error: error.message });
         }
     }
