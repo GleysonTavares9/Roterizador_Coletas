@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Phone, Shield, Camera, Save, LogOut, Users } from 'lucide-react';
+import { User, Mail, Phone, Shield, Camera, Save, LogOut, Users, Loader2 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { useNavigate } from 'react-router-dom';
 
@@ -119,6 +119,32 @@ export default function ProfilePage() {
             alert('Erro ao fazer upload da imagem: ' + error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const [newPassword, setNewPassword] = useState('');
+    const [changingPassword, setChangingPassword] = useState(false);
+
+    const handlePasswordChange = async () => {
+        if (!newPassword || newPassword.length < 6) {
+            alert('❌ A senha deve ter pelo menos 6 caracteres.');
+            return;
+        }
+
+        setChangingPassword(true);
+        try {
+            const { error } = await supabase.auth.updateUser({
+                password: newPassword
+            });
+
+            if (error) throw error;
+
+            alert('✅ Senha atualizada com sucesso!');
+            setNewPassword('');
+        } catch (error: any) {
+            alert('❌ Erro ao atualizar senha: ' + error.message);
+        } finally {
+            setChangingPassword(false);
         }
     };
 
@@ -262,10 +288,28 @@ export default function ProfilePage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Segurança</CardTitle>
-                        <CardDescription>Gerencie sua senha e configurações de segurança</CardDescription>
+                        <CardDescription>Gerencie sua senha de acesso</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Button variant="outline">Alterar Senha</Button>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Nova Senha</label>
+                            <input
+                                type="password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                placeholder="Mínimo 6 caracteres"
+                            />
+                        </div>
+                        <Button
+                            variant="outline"
+                            onClick={handlePasswordChange}
+                            disabled={changingPassword || !newPassword}
+                            className="w-full"
+                        >
+                            {changingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            Atualizar Senha
+                        </Button>
                     </CardContent>
                 </Card>
 
