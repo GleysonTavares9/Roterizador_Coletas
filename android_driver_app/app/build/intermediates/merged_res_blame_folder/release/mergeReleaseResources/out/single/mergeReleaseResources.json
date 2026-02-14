@@ -1,0 +1,254 @@
+[
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_calendar.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_calendar.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_circle_glass_bg.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/circle_glass_bg.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/layout_activity_native_voice_call.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/layout/activity_native_voice_call.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_truck.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_truck.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_repeat.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_repeat.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/layout_dialog_chat_bottom_sheet.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/layout/dialog_chat_bottom_sheet.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_send_nav.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_send_nav.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_mic.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_mic.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_check_circle.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_check_circle.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_bg_call_gradient.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/bg_call_gradient.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_app_logo_mono.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_app_logo_mono.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_x_circle.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_x_circle.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_lock.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_lock.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/layout_activity_base.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/layout/activity_base.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_google_maps.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_google_maps.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_call.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_call.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_close.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_close.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_logout.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_logout.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_app_logo.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/app_logo.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_circle_button_red.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/circle_button_red.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_mic_off.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_mic_off.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_call_end.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_call_end.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_navigation.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_navigation.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_clock.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_clock.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-mdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_arrow_left.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_arrow_left.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_circle_pulse_bg.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/circle_pulse_bg.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_user.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_user.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_check.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_check.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/layout_activity_login.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/anim_blink_animation.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/anim/blink_animation.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_chat.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_chat.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/color_bottom_nav_item_color.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/color/bottom_nav_item_color.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/menu_bottom_navigation_menu.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/menu/bottom_navigation_menu.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_circle_button_green.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/circle_button_green.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_gradient_primary.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/gradient_primary.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_chevron_right.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_chevron_right.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/anim_pulse_animation.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/anim/pulse_animation.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_refresh.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_refresh.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_scale.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_scale.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_circle_avatar_bg.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/circle_avatar_bg.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_map_pin.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_map_pin.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_person.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_person.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_waze.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_waze.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_ic_home.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/ic_home.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.roterizacao.driver.app-release-35:/drawable_circle_button_white.xml.flat",
+        "source": "com.roterizacao.driver.app-main-36:/drawable/circle_button_white.xml"
+    }
+]

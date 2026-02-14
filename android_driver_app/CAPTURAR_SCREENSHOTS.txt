@@ -1,0 +1,88 @@
+===========================================
+GUIA RÁPIDO: CAPTURAR SCREENSHOTS
+===========================================
+
+TELAS NECESSÁRIAS (mínimo 2, recomendado 5-8):
+-----------------------------------------------
+
+1. TELA DE LOGIN ⭐ (obrigatória)
+   - Mostra o formulário de login
+   - Logo da empresa
+   - Campos de email/senha
+
+2. LISTA DE ROTAS ⭐ (obrigatória)
+   - Mostra as datas disponíveis
+   - Ou lista de rotas do dia
+   - Header com nome do motorista
+
+3. DETALHES DA ROTA (recomendada)
+   - Card da rota com informações
+   - Placa do veículo
+   - Estatísticas (pontos, distância, tempo)
+
+4. MAPA DA ROTA (recomendada)
+   - Visualização do mapa
+   - Pontos de coleta
+   - Rota traçada
+
+5. PERFIL/CONFIGURAÇÕES (opcional)
+   - Dados do motorista
+   - Opções do app
+
+===========================================
+COMO CAPTURAR NO EMULADOR:
+===========================================
+
+1. Abra o Android Studio
+2. Execute o app no emulador (Shift+F10)
+3. Aguarde o app abrir
+4. Navegue até a tela desejada
+5. Clique no ícone de CÂMERA na barra lateral do emulador
+6. Ou pressione Ctrl+S
+7. Salve a imagem
+
+IMPORTANTE:
+- Tamanho recomendado: 1080x1920 ou 1080x2400
+- Formato: PNG ou JPEG
+- Qualidade: Alta
+
+===========================================
+ONDE SALVAR:
+===========================================
+
+Salve as screenshots em:
+play_store_assets/screenshots/phone/
+
+Nomeie os arquivos:
+01_login.png
+02_lista_rotas.png
+03_detalhes_rota.png
+04_mapa.png
+05_perfil.png
+
+===========================================
+ALTERNATIVA: DISPOSITIVO REAL
+===========================================
+
+Se preferir usar um celular real:
+
+1. Instale o app no celular
+2. Abra o app
+3. Pressione Power + Volume Down (Samsung)
+   Ou Power + Volume Down (Xiaomi, Motorola)
+4. Screenshots serão salvos na galeria
+5. Transfira para o PC via cabo USB
+
+===========================================
+DICA PRO:
+===========================================
+
+Para screenshots mais profissionais:
+- Use modo claro (evite modo escuro)
+- Preencha com dados reais (não "teste teste")
+- Evite informações sensíveis
+- Capture em horário de trabalho (10h-16h)
+- Bateria acima de 50%
+- Sinal de rede bom
+
+===========================================

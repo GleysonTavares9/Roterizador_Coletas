@@ -1,0 +1,161 @@
+===========================================
+O QUE É FEATURE GRAPHIC?
+===========================================
+
+O Feature Graphic é uma imagem de BANNER que aparece:
+- No topo da página do app na Google Play Store
+- Em destaque quando o app é promovido
+- Em categorias e coleções
+
+TAMANHO OBRIGATÓRIO:
+- Dimensões: 1024x500 pixels (exato!)
+- Formato: PNG ou JPEG
+- Tamanho máximo: 1 MB
+
+===========================================
+O QUE DEVE CONTER:
+===========================================
+
+✓ Logo do app (à esquerda ou centro)
+✓ Nome do app: "Roterizacao Driver"
+✓ Slogan/Descrição curta (opcional)
+✓ Elementos visuais relacionados:
+  - Ícone de caminhão
+  - Mapa/GPS
+  - Rotas
+
+✗ NÃO PODE:
+  - Texto muito pequeno (ilegível)
+  - Imagens de baixa qualidade
+  - Informações enganosas
+  - Preços ou promoções
+
+===========================================
+EXEMPLO DE LAYOUT:
+===========================================
+
+┌────────────────────────────────────────────┐
+│  [LOGO]   ROTERIZACAO DRIVER               │
+│           Rotas Otimizadas em Tempo Real   │
+│                                    [TRUCK] │
+└────────────────────────────────────────────┘
+
+OU
+
+┌────────────────────────────────────────────┐
+│                                            │
+│         ROTERIZACAO DRIVER                 │
+│    [LOGO] Gestão de Rotas [MAP ICON]       │
+│                                            │
+└────────────────────────────────────────────┘
+
+===========================================
+OPÇÕES PARA CRIAR:
+===========================================
+
+OPÇÃO 1: CANVA (Recomendado - Fácil)
+-------------------------------------
+1. Acesse: https://www.canva.com
+2. Crie conta gratuita
+3. Pesquise: "Google Play Feature Graphic"
+4. Escolha um template
+5. Personalize:
+   - Adicione o logo
+   - Mude o texto para "Roterizacao Driver"
+   - Ajuste cores (azul #2563EB)
+6. Download: PNG, 1024x500
+
+OPÇÃO 2: PHOTOSHOP/GIMP
+-------------------------------------
+1. Crie novo arquivo: 1024x500 pixels
+2. Fundo: Gradiente azul (#2563EB → #1e40af)
+3. Adicione o logo (ic_launcher-playstore.png)
+4. Adicione texto: "Roterizacao Driver"
+5. Adicione ícones de caminhão/mapa
+6. Salve como PNG
+
+OPÇÃO 3: POWERPOINT (Simples)
+-------------------------------------
+1. Abra PowerPoint
+2. Configurar página: 1024x500 pixels
+   (Arquivo > Configurar Página)
+3. Fundo azul (#2563EB)
+4. Insira o logo
+5. Adicione texto "Roterizacao Driver"
+6. Salvar como > PNG
+
+OPÇÃO 4: FERRAMENTA ONLINE
+-------------------------------------
+https://www.photopea.com (Photoshop online grátis)
+1. Novo projeto: 1024x500
+2. Desenhe o banner
+3. Download PNG
+
+===========================================
+CORES RECOMENDADAS:
+===========================================
+
+Primária: #2563EB (Azul)
+Secundária: #1e40af (Azul escuro)
+Texto: #FFFFFF (Branco)
+Destaque: #60A5FA (Azul claro)
+
+===========================================
+TEXTO SUGERIDO:
+===========================================
+
+Título: ROTERIZACAO DRIVER
+Subtítulo (opcional):
+- "Rotas Otimizadas em Tempo Real"
+- "Gestão Inteligente de Entregas"
+- "Navegação GPS Integrada"
+- "Para Motoristas Profissionais"
+
+===========================================
+ONDE SALVAR:
+===========================================
+
+Salve o arquivo como:
+play_store_assets/feature_graphic/feature_graphic.png
+
+Tamanho: Exatamente 1024x500 pixels
+Formato: PNG (recomendado) ou JPEG
+
+===========================================
+VALIDAÇÃO:
+===========================================
+
+Antes de fazer upload, verifique:
+✓ Dimensões: 1024x500 pixels
+✓ Tamanho: Menor que 1 MB
+✓ Texto legível
+✓ Logo visível
+✓ Cores harmoniosas
+✓ Sem erros de ortografia
+
+===========================================
+EXEMPLO PRÁTICO (CANVA):
+===========================================
+
+1. Acesse: canva.com
+2. Busque: "Google Play Feature Graphic"
+3. Template sugerido: "App Banner" ou "Tech Banner"
+4. Personalize:
+   - Título: "ROTERIZACAO DRIVER"
+   - Subtítulo: "Rotas Otimizadas • GPS • Tempo Real"
+   - Cores: Azul (#2563EB)
+   - Adicione ícone de caminhão
+5. Download: PNG, 1024x500
+
+Tempo estimado: 10-15 minutos
+
+===========================================
+PRECISA DE AJUDA?
+===========================================
+
+Se não conseguir criar, você pode:
+1. Contratar um designer no Fiverr (USD $5-20)
+2. Usar IA: Canva Magic Design
+3. Pedir ajuda a um colega com Photoshop
+
+===========================================

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cores principais do sistema (compatível com web) -->
+    <color name="primary">#0c3773</color>
+    <color name="primary_dark">#162562</color>
+    <color name="primary_light">#1e4a8f</color>
+    
+    <!-- Cores de acento -->
+    <color name="accent">#3b82f6</color>
+    <color name="accent_light">#60a5fa</color>
+    
+    <!-- Cores de fundo -->
+    <color name="background">#FFFFFF</color>
+    <color name="background_dark">#0f172a</color>
+    <color name="surface">#F8FAFC</color>
+    
+    <!-- Cores de texto -->
+    <color name="text_primary">#1e293b</color>
+    <color name="text_secondary">#64748b</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    
+    <!-- Cores de status -->
+    <color name="success">#10b981</color>
+    <color name="warning">#f59e0b</color>
+    <color name="error">#ef4444</color>
+    <color name="info">#3b82f6</color>
+    
+    <!-- Cores básicas -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray">#6b7280</color>
+    <color name="gray_light">#e5e7eb</color>
+    <color name="white_alpha_60">#99FFFFFF</color>
+    
+    <!-- Cores legadas (manter compatibilidade) -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="blue_primary">#0c3773</color>
+    <color name="blue_dark">#162562</color>
+    
+    <!-- Call button colors -->
+    <color name="red">#DC3545</color>
+    <color name="blue">#3b82f6</color>
+    <color name="green">#28A745</color>
+</resources>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_call_gradient"
+    tools:context=".NativeVoiceCallActivity">
+
+    <!-- Avatar Circle -->
+    <View
+        android:id="@+id/avatarCircle"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/circle_glass_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Pulse Animation Circle -->
+    <View
+        android:id="@+id/pulseCircle"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:alpha="0.3"
+        android:background="@drawable/circle_pulse_bg"
+        app:layout_constraintBottom_toBottomOf="@id/avatarCircle"
+        app:layout_constraintEnd_toEndOf="@id/avatarCircle"
+        app:layout_constraintStart_toStartOf="@id/avatarCircle"
+        app:layout_constraintTop_toTopOf="@id/avatarCircle" />
+
+    <!-- Avatar Icon -->
+    <ImageView
+        android:id="@+id/avatarIcon"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@mipmap/ic_launcher"
+        android:scaleType="fitCenter"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/avatarCircle"
+        app:layout_constraintEnd_toEndOf="@id/avatarCircle"
+        app:layout_constraintStart_toStartOf="@id/avatarCircle"
+        app:layout_constraintTop_toTopOf="@id/avatarCircle" />
+
+    <!-- Status Text -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Chamando..."
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/avatarCircle" />
+
+    <!-- Duration Text -->
+    <TextView
+        android:id="@+id/durationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="00:00"
+        android:textColor="@color/white_70"
+        android:textSize="18sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/statusText" />
+
+    <!-- Buttons Container -->
+    <LinearLayout
+        android:id="@+id/buttonsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Accept Button (for incoming calls) -->
+        <ImageButton
+            android:id="@+id/acceptButton"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/circle_button_green"
+            android:contentDescription="Aceitar"
+            android:elevation="8dp"
+            android:padding="16dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_call"
+            android:visibility="gone"
+            tools:visibility="visible" />
+            
+        <!-- Chat Button -->
+        <ImageButton
+            android:id="@+id/chatButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/circle_button_white"
+            android:contentDescription="Chat"
+            android:elevation="4dp"
+            android:padding="16dp"
+            android:scaleType="fitCenter"
+            android:src="@android:drawable/stat_notify_chat"
+            android:visibility="visible" />
+
+        <!-- Mute Button -->
+        <ImageButton
+            android:id="@+id/muteButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/circle_button_white"
+            android:contentDescription="Mudo"
+            android:elevation="4dp"
+            android:padding="14dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_mic"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <!-- End Call Button -->
+        <ImageButton
+            android:id="@+id/endCallButton"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/circle_button_red"
+            android:contentDescription="Encerrar"
+            android:elevation="8dp"
+            android:padding="16dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_call_end"
+            android:visibility="visible" />
+
+        <!-- Reject Button (for incoming calls) -->
+        <ImageButton
+            android:id="@+id/rejectButton"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/circle_button_red"
+            android:contentDescription="Rejeitar"
+            android:elevation="8dp"
+            android:padding="16dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_call_end"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,86 @@
+===========================================
+ASSETS VISUAIS NECESSÁRIOS PARA GOOGLE PLAY
+===========================================
+
+📱 ÍCONE DO APP (já existe):
+✓ app_logo.xml (512x512)
+Localização: app/src/main/res/drawable/app_logo.xml
+
+🖼️ SCREENSHOTS NECESSÁRIOS:
+
+1. TELEFONE (obrigatório - mínimo 2, máximo 8):
+   Tamanho: 1080x1920 ou 1080x2400
+   Formato: PNG ou JPEG
+   
+   Sugestões de telas para capturar:
+   ✓ Tela de Login
+   ✓ Lista de Rotas
+   ✓ Detalhes da Rota com Mapa
+   ✓ Navegação em Andamento
+   ✓ Registro de Coleta
+   ✓ Chat/Mensagens
+   ✓ Histórico de Entregas
+
+2. TABLET 7" (opcional):
+   Tamanho: 1024x1920
+   Formato: PNG ou JPEG
+
+3. TABLET 10" (opcional):
+   Tamanho: 2048x2732
+   Formato: PNG ou JPEG
+
+🎨 GRÁFICO DE RECURSOS (Feature Graphic):
+   Tamanho: 1024x500 pixels
+   Formato: PNG ou JPEG
+   Obrigatório para aparecer em destaque na Play Store
+
+📺 VÍDEO PROMOCIONAL (opcional):
+   YouTube URL
+   Exemplo de conteúdo:
+   - Demonstração do app em uso
+   - Principais funcionalidades
+   - Benefícios para motoristas
+
+===========================================
+COMO CAPTURAR SCREENSHOTS:
+===========================================
+
+OPÇÃO 1: Usar Emulador Android Studio
+1. Abra o app no emulador
+2. Navegue até a tela desejada
+3. Clique no ícone de câmera na barra lateral
+4. Salve a imagem
+
+OPÇÃO 2: Usar Dispositivo Real
+1. Abra o app no celular
+2. Pressione Power + Volume Down
+3. Transfira as imagens para o PC
+
+OPÇÃO 3: Gerar Screenshots Automaticamente
+Use ferramentas como:
+- Fastlane Screengrab
+- Firebase Test Lab
+- Appetize.io
+
+===========================================
+LOCALIZAÇÃO PARA SALVAR:
+===========================================
+
+Crie uma pasta:
+android_driver_app/play_store_assets/
+
+Estrutura:
+play_store_assets/
+├── screenshots/
+│   ├── phone/
+│   │   ├── 01_login.png
+│   │   ├── 02_routes_list.png
+│   │   ├── 03_route_detail.png
+│   │   ├── 04_navigation.png
+│   │   └── 05_history.png
+│   ├── tablet_7/
+│   └── tablet_10/
+├── feature_graphic.png
+└── icon_512.png
+
+===========================================

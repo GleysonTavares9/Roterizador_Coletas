@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home"
+        android:title="Início" />
+    
+    <item
+        android:id="@+id/navigation_chat"
+        android:icon="@drawable/ic_chat"
+        android:title="Chat" />
+    
+    <item
+        android:id="@+id/navigation_call"
+        android:icon="@drawable/ic_call"
+        android:title="Ligar" />
+    
+    <item
+        android:id="@+id/navigation_refresh"
+        android:icon="@drawable/ic_refresh"
+        android:title="Atualizar" />
+</menu>

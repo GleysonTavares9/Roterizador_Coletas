@@ -1,0 +1,60 @@
+===========================================
+COMO GERAR ÍCONE PNG 512x512
+===========================================
+
+O app já tem um ícone vetorial (app_logo.xml), mas o Google Play precisa de um PNG de 512x512.
+
+OPÇÃO 1: USAR ANDROID STUDIO (Recomendado)
+-------------------------------------------
+1. Abra o projeto no Android Studio
+2. Clique com botão direito em: app/src/main/res
+3. New > Image Asset
+4. Icon Type: Launcher Icons (Adaptive and Legacy)
+5. Foreground Layer:
+   - Asset Type: Image
+   - Path: Selecione uma imagem ou use o app_logo.xml
+6. Background Layer:
+   - Color: #2563EB (azul)
+7. Clique em "Next" > "Finish"
+8. Android Studio vai gerar automaticamente:
+   - mipmap-xxxhdpi/ic_launcher.png (192x192)
+   - E outras densidades
+
+9. Para gerar 512x512:
+   - Vá em Build > Generate Signed Bundle / APK
+   - O Android Studio gera automaticamente o ícone 512x512
+
+OPÇÃO 2: EXPORTAR MANUALMENTE
+-------------------------------------------
+1. Abra app_logo.xml no Android Studio
+2. Clique com botão direito no preview
+3. "Export PNG"
+4. Escolha tamanho: 512x512
+5. Salve como: ic_launcher_512.png
+
+OPÇÃO 3: USAR FERRAMENTA ONLINE
+-------------------------------------------
+1. Acesse: https://romannurik.github.io/AndroidAssetStudio/
+2. Escolha "Launcher icon generator"
+3. Upload uma imagem ou use texto
+4. Download o ZIP
+5. Extraia e pegue o arquivo 512x512
+
+OPÇÃO 4: JÁ TENHO UMA IMAGEM
+-------------------------------------------
+Se você já tem um logo da empresa:
+1. Redimensione para 512x512 pixels
+2. Formato: PNG com fundo transparente
+3. Salve como: ic_launcher_512.png
+4. Coloque em: play_store_assets/
+
+===========================================
+LOCALIZAÇÃO FINAL
+===========================================
+
+Salve o ícone 512x512 em:
+android_driver_app/play_store_assets/ic_launcher_512.png
+
+Este arquivo será usado no upload do Google Play Console.
+
+===========================================

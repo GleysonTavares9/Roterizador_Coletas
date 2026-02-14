@@ -1,0 +1,220 @@
+===========================================
+CHECKLIST COMPLETO - PUBLICAÇÃO GOOGLE PLAY
+===========================================
+
+📋 PASSO A PASSO PARA PUBLICAR
+
+===========================================
+FASE 1: CONFIGURAÇÃO INICIAL
+===========================================
+
+□ 1.1 Criar conta Google Play Console
+      URL: https://play.google.com/console
+      Taxa: USD $25 (pagamento único)
+
+□ 1.2 Criar novo app
+      - Nome: Roterizacao Driver
+      - Idioma padrão: Português (Brasil)
+      - Tipo: App
+      - Gratuito/Pago: Gratuito
+
+===========================================
+FASE 2: DETALHES DO APP
+===========================================
+
+□ 2.1 Página "Detalhes do app"
+      ✓ Nome do app: Roterizacao Driver
+      ✓ Descrição curta: [Ver GOOGLE_PLAY_INFO.txt]
+      ✓ Descrição completa: [Ver GOOGLE_PLAY_INFO.txt]
+      ✓ Ícone do app: 512x512 PNG
+      ✓ Gráfico de recursos: 1024x500 PNG
+      ✓ Screenshots: Mínimo 2 (1080x1920)
+
+□ 2.2 Categorização
+      ✓ Categoria: Negócios
+      ✓ Tags: logística, rotas, motorista, entregas
+
+□ 2.3 Detalhes de contato
+      ✓ Email: suporte@roterizacao.com.br
+      ✓ Telefone: (opcional)
+      ✓ Site: https://roterizador-nu.vercel.app
+
+===========================================
+FASE 3: CONTEÚDO DO APP
+===========================================
+
+□ 3.1 Política de Privacidade
+      ✓ Hospedar em: https://roterizador-nu.vercel.app/privacy
+      ✓ Arquivo: POLITICA_PRIVACIDADE.md
+      ✓ Inserir URL no Play Console
+
+□ 3.2 Classificação de Conteúdo
+      ✓ Preencher questionário
+      ✓ Responder sobre violência, sexo, drogas, etc.
+      ✓ Classificação esperada: Livre (PEGI 3)
+
+□ 3.3 Público-alvo
+      ✓ Faixa etária: 18+ (motoristas profissionais)
+      ✓ Interesse especial em crianças: NÃO
+
+□ 3.4 Segurança dos Dados
+      ✓ Dados coletados:
+         - Localização precisa (GPS)
+         - Informações pessoais (nome, email)
+         - Fotos (comprovantes)
+         - ID do dispositivo
+      ✓ Compartilhamento: Apenas com empresa contratante
+      ✓ Criptografia: SIM (em trânsito e repouso)
+      ✓ Exclusão de dados: Usuário pode solicitar
+
+□ 3.5 Acesso de Apps
+      ✓ Requer login: SIM
+      ✓ Fornecer credenciais de teste:
+         Email: teste@roterizacao.com.br
+         Senha: Teste@2025
+         (Criar conta de teste no Supabase)
+
+□ 3.6 Anúncios
+      ✓ Contém anúncios: NÃO
+
+□ 3.7 Apps Governamentais
+      ✓ É app governamental: NÃO
+
+□ 3.8 Recursos Financeiros
+      ✓ Oferece compras: NÃO
+      ✓ Processa pagamentos: NÃO
+
+===========================================
+FASE 4: TESTE INTERNO (OPCIONAL)
+===========================================
+
+□ 4.1 Criar faixa de teste interno
+      ✓ Nome: Teste Interno
+      ✓ Adicionar testadores (emails)
+      ✓ Upload do AAB
+      ✓ Publicar versão
+
+□ 4.2 Testar no dispositivo
+      ✓ Instalar via link do Play Console
+      ✓ Verificar funcionalidades
+      ✓ Corrigir bugs encontrados
+
+===========================================
+FASE 5: TESTE FECHADO (OBRIGATÓRIO)
+===========================================
+
+□ 5.1 Criar faixa de teste fechado
+      ✓ Nome: Beta Fechado
+      ✓ Países: Brasil
+      
+□ 5.2 Adicionar testadores (mínimo 12)
+      ✓ Criar lista de emails
+      ✓ Ou usar Google Groups
+      ✓ Enviar convites
+
+□ 5.3 Upload do AAB
+      ✓ Arquivo: app-release.aab
+      ✓ Notas da versão: [Ver exemplo curto]
+
+□ 5.4 Publicar teste fechado
+      ✓ Revisar e confirmar
+      ✓ Publicar versão
+
+□ 5.5 Aguardar período de teste
+      ✓ Mínimo: 14 dias
+      ✓ Mínimo: 12 testadores ativos
+      ✓ Coletar feedback
+      ✓ Corrigir problemas
+
+===========================================
+FASE 6: PRODUÇÃO
+===========================================
+
+□ 6.1 Solicitar acesso de produção
+      ✓ Completar questionário sobre teste fechado
+      ✓ Confirmar que teste foi bem-sucedido
+
+□ 6.2 Criar versão de produção
+      ✓ Upload do AAB final
+      ✓ Notas da versão
+      ✓ Países: Brasil
+      ✓ Porcentagem de lançamento: 100%
+
+□ 6.3 Revisar e enviar
+      ✓ Verificar todas as informações
+      ✓ Enviar para revisão do Google
+
+□ 6.4 Aguardar aprovação
+      ✓ Tempo médio: 1-3 dias
+      ✓ Verificar emails do Play Console
+      ✓ Corrigir se rejeitado
+
+===========================================
+FASE 7: PÓS-PUBLICAÇÃO
+===========================================
+
+□ 7.1 Monitorar
+      ✓ Verificar crashes no Play Console
+      ✓ Ler avaliações dos usuários
+      ✓ Responder comentários
+
+□ 7.2 Atualizar
+      ✓ Corrigir bugs reportados
+      ✓ Adicionar novas funcionalidades
+      ✓ Manter app atualizado
+
+===========================================
+ARQUIVOS CRIADOS PARA VOCÊ
+===========================================
+
+✓ GOOGLE_PLAY_INFO.txt - Todas as descrições e informações
+✓ ASSETS_NECESSARIOS.txt - Guia de screenshots e imagens
+✓ POLITICA_PRIVACIDADE.md - Política de privacidade completa
+✓ Este checklist - Passo a passo completo
+
+===========================================
+PRÓXIMOS PASSOS IMEDIATOS
+===========================================
+
+1. Hospedar Política de Privacidade
+   - Adicionar página /privacy no site Vercel
+   - Copiar conteúdo de POLITICA_PRIVACIDADE.md
+
+2. Criar Screenshots
+   - Abrir app no emulador
+   - Capturar 5-8 telas principais
+   - Salvar em play_store_assets/screenshots/
+
+3. Criar Gráfico de Recursos (1024x500)
+   - Design atrativo com logo e texto
+   - Destacar principais funcionalidades
+
+4. Criar Conta de Teste
+   - Email: teste@roterizacao.com.br
+   - Senha: Teste@2025
+   - Cadastrar no Supabase
+
+5. Preencher Play Console
+   - Seguir este checklist item por item
+   - Não pular nenhuma etapa
+
+===========================================
+TEMPO ESTIMADO TOTAL
+===========================================
+
+Configuração inicial: 2-3 horas
+Teste fechado: 14 dias (mínimo)
+Revisão do Google: 1-3 dias
+TOTAL: ~17-20 dias até publicação
+
+===========================================
+DÚVIDAS?
+===========================================
+
+Documentação oficial:
+https://support.google.com/googleplay/android-developer
+
+Suporte Google Play:
+https://support.google.com/googleplay/android-developer/contact
+
+===========================================

@@ -1,0 +1,98 @@
+===========================================
+INFORMAÇÕES PARA GOOGLE PLAY CONSOLE
+===========================================
+
+📱 NOME DO APP:
+Roterizacao Driver
+
+📝 DESCRIÇÃO CURTA (80 caracteres):
+App oficial para motoristas - Rotas otimizadas e rastreamento em tempo real
+
+📄 DESCRIÇÃO COMPLETA (4000 caracteres):
+
+O Roterizacao Driver é o aplicativo essencial para motoristas parceiros, projetado para transformar a sua rotina de entregas proporcionando máxima eficiência e praticidade. Integrado ao nosso sistema avançado de roteirização, este aplicativo coloca o controle total da sua jornada na palma da sua mão.
+
+Com o Roterizacao Driver, você elimina papeladas, evita rotas ineficientes e se comunica em tempo real com a central de operações, garantindo que cada entrega seja realizada com sucesso e rapidez.
+
+� PRINCIPAIS FUNCIONALIDADES:
+
+✅ Rotas Inteligentes: Receba rotas otimizadas diariamente, com a melhor sequência de paradas para economizar tempo e combustível.
+✅ Navegação Integrada: Abra endereços de coleta e entrega diretamente no seu aplicativo de GPS favorito (Google Maps ou Waze) com apenas um toque.
+✅ Rastreamento em Tempo Real: Sua posição é atualizada automaticamente para a central, permitindo um acompanhamento preciso sem a necessidade de ligações constantes.
+✅ Comprovantes Digitais: Registre a finalização de cada serviço tirando fotos, colhendo assinaturas digitais e adicionando observações, tudo pelo app.
+✅ Comunicação Direta: Reporte ocorrências, imprevistos ou problemas na entrega instantaneamente para a equipe de suporte.
+✅ Histórico de Atividades: Consulte suas rotas finalizadas e mantenha um registro do seu desempenho.
+
+📱 POR QUE USAR?
+Este aplicativo foi desenvolvido pensando no dia a dia do motorista profissional. Com uma interface limpa, botões grandes e modo noturno, ele oferece conforto visual e facilidade de uso, mesmo em movimento. Além disso, funciona de forma segura, respeitando sua privacidade e dados.
+
+🔒 SEGURANÇA E PRIVACIDADE:
+Utilizamos apenas o Android ID para identificação segura do dispositivo, sem coletar dados sensíveis como número de telefone ou IMEI, garantindo total conformidade com as políticas de privacidade mais rigorosas.
+
+Baixe agora e leve sua produtividade para o próximo nível com o Roterizacao Driver!
+
+===========================================
+CONFIGURAÇÕES DA LOJA
+===========================================
+
+📌 URL DA POLÍTICA DE PRIVACIDADE:
+https://roterizar.vercel.app/privacy
+
+📌 CATEGORIA:
+Mapas e Navegação (ou Negócios)
+
+📌 SITE / WEBSITE:
+https://roterizar.vercel.app
+
+📌 EMAIL DE SUPORTE:
+suporte@roterizacao.com.br
+(ou seu email pessoal: gleysontavares0@gmail.com)
+
+===========================================
+SEGURANÇA DOS DADOS (DATA SAFETY)
+===========================================
+
+1. COLETA DE DADOS:
+• Localização: Sim (Precisa, Aproximada)
+    - Finalidade: Funcionalidade do App, Análise
+• Informações Pessoais: Sim (Nome, Email, User IDs)
+    - Finalidade: Gerenciamento da conta
+• Fotos e Vídeos: Sim (Fotos)
+    - Finalidade: Funcionalidade do App (comprovantes)
+• Identificadores de Dispositivo: Sim (Device IDs ou outros)
+    - ATENÇÃO: Marque que usa "Android ID"
+    - Finalidade: Funcionalidade do App, Prevenção de fraude
+
+2. COMPARTILHAMENTO:
+• Não compartilhamos dados com terceiros (exceto se necessário para funcionalidade, como mapas)
+
+3. SEGURANÇA:
+• Os dados são criptografados em trânsito? SIM
+• O usuário pode solicitar a exclusão? SIM
+
+4. ID DE PUBLICIDADE:
+• Seu app usa ID de publicidade? NÃO
+
+===========================================
+PERMISSÕES (SDK 35 - Android 15)
+===========================================
+• Acesso à Localização (Fundo e Primeiro Plano)
+• Acesso à Internet
+• Câmera (para fotos de comprovante)
+• Serviço em Primeiro Plano (Foreground Service)
+
+===========================================
+ACESSO AO APP (App Access)
+===========================================
+• Marque: "Todas as funcionalidades estão disponíveis sem acesso especial"
+  OU SE PRECISAR DE LOGIN:
+• Marque: "Todo ou parte da funcionalidade é restrita"
+  - Forneça um usuário/senha de teste para o Google:
+  - Usuário: teste@roterizacao.com
+  - Senha: 123456(teste)
+
+===========================================
+PÚBLICO ALVO
+===========================================
+• 18 anos ou mais
+• O app é direcionado para crianças? NÃO

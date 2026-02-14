@@ -1,0 +1,59 @@
+========================================
+GUIA FINAL: GERAR AAB PARA GOOGLE PLAY
+========================================
+
+IMPORTANTE: Use o Android Studio!
+
+PASSO A PASSO:
+
+1. ABRIR O PROJETO
+   - Abra o Android Studio
+   - File > Open
+   - Selecione a pasta: android_driver_app
+
+2. GERAR AAB ASSINADO
+   - Build > Generate Signed Bundle / APK
+   - Selecione: Android App Bundle
+   - Clique em: Next
+
+3. CONFIGURAR ASSINATURA
+   - Key store path: Clique em "Choose existing..."
+   - Navegue até: release-key.jks
+   - Key store password: Roterizacao@2025
+   - Key alias: upload
+   - Key password: Roterizacao@2025
+   - Clique em: Next
+
+4. BUILD
+   - Build Variants: release
+   - Signature Versions: V1 e V2 (ambos marcados)
+   - Clique em: Create
+
+5. AGUARDAR
+   - O build vai levar 1-2 minutos
+   - Uma notificação aparecerá quando terminar
+
+6. LOCALIZAR O AAB
+   - Clique em "locate" na notificação
+   - OU vá em: app\build\outputs\bundle\release\
+   - Arquivo: app-release.aab
+
+7. UPLOAD NO GOOGLE PLAY
+   - Acesse: https://play.google.com/console
+   - Selecione seu app
+   - Produção > Criar nova versão
+   - Faça upload do app-release.aab
+
+========================================
+CREDENCIAIS DA KEYSTORE (ANOTE!)
+========================================
+Arquivo: release-key.jks
+Senha Keystore: Roterizacao@2025
+Alias: upload
+Senha Chave: Roterizacao@2025
+========================================
+
+GUARDE ESSAS INFORMAÇÕES!
+Você precisará delas para TODAS as atualizações futuras!
+
+========================================
