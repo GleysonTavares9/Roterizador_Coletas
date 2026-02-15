@@ -34,7 +34,6 @@ com.roterizacao.driver.app-resValues-32 C:\Users\GleysonMiranda\Downloads\Roteri
 com.roterizacao.driver.app-updated_navigation_xml-33 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\build\generated\updated_navigation_xml\release
 com.roterizacao.driver.app-packageReleaseResources-34 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
 com.roterizacao.driver.app-packageReleaseResources-35 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
-com.roterizacao.driver.app-merged-not-compiled-resources-36 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\build\intermediates\merged-not-compiled-resources\release
-com.roterizacao.driver.app-release-37 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\build\intermediates\merged_res\release\mergeReleaseResources
-com.roterizacao.driver.app-main-38 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\src\main\res
-com.roterizacao.driver.app-release-39 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\src\release\res
+com.roterizacao.driver.app-release-36 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\build\intermediates\merged_res\release\mergeReleaseResources
+com.roterizacao.driver.app-main-37 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\src\main\res
+com.roterizacao.driver.app-release-38 C:\Users\GleysonMiranda\Downloads\Roterizador_Coletas\android_driver_app\app\src\release\res
