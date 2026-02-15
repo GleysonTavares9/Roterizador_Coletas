@@ -175,14 +175,19 @@ class LoginActivity : AppCompatActivity() {
             if (cpf.length != 11) { msg.text = "CPF Inválido"; return@setOnClickListener }
             if (pass.isEmpty()) { msg.text = "Digite a senha"; return@setOnClickListener }
 
+            Log.d("LoginActivity", "Iniciando busca por CPF: $cpf")
             msg.text = "Verificando..."
             btn.isEnabled = false
             
             lifecycleScope.launch {
                 try {
                     val res = RetrofitClient.apiService.getDriverByCpf("eq.$cpf")
+                    Log.d("LoginActivity", "Resposta recebida: code=${res.code()}, isSuccessful=${res.isSuccessful}")
+                    
                     if (res.isSuccessful && !res.body().isNullOrEmpty()) {
                         val driver = res.body()!![0]
+                        Log.d("LoginActivity", "Motorista encontrado: ${driver.name}, active=${driver.active}")
+                        
                         if (driver.active != true) {
                             msg.text = "Motorista inativo."; btn.isEnabled = true
                             return@launch
@@ -193,6 +198,7 @@ class LoginActivity : AppCompatActivity() {
                         val valid = pass == cpf.substring(0, 6)
                         
                         if (valid) {
+                            Log.d("LoginActivity", "Senha válida. Salvando sessão.")
                             // Save Session
                             val ed = getSharedPreferences("driver_prefs", Context.MODE_PRIVATE).edit()
                             ed.putString("DRIVER_ID", driver.id)
@@ -206,12 +212,15 @@ class LoginActivity : AppCompatActivity() {
                             startActivity(Intent(this@LoginActivity, RouteListActivity::class.java))
                             finish()
                         } else {
+                            Log.w("LoginActivity", "Senha incorreta informada.")
                             msg.text = "Senha incorreta."; btn.isEnabled = true
                         }
                     } else {
+                        Log.w("LoginActivity", "Motorista não encontrado ou lista vazia. Body: ${res.body()}")
                         msg.text = "Motorista não encontrado."; btn.isEnabled = true
                     }
                 } catch (e: Exception) {
+                    Log.e("LoginActivity", "Erro na requisição: ${e.message}", e)
                     msg.text = "Erro: ${e.message}"; btn.isEnabled = true
                 }
             }

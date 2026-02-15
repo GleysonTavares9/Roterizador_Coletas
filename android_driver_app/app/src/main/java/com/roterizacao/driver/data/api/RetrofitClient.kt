@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient
 
 object RetrofitClient {
     private const val BASE_URL = "https://dbhhsyeqsreyekevffsl.supabase.co/rest/v1/"
-    private const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiaGhzeWVxc3JleWVrZXZmZnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5NDEzODgsImV4cCI6MjA4MTUxNzM4OH0.ABqjIN1Ehn-kCinD9P0Mfy7-AcssA_QLIzs5Z7knFWA"
+    private const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiaGhzeWVxc3JleWVrZXZmZnNsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTk0MTM4OCwiZXhwIjoyMDgxNTE3Mzg4fQ.BexDYdcdtTJGcyAavAaw3otxEe5H-jsQ4moJqd5T7LI"
 
     private val client = OkHttpClient.Builder()
         .addInterceptor { chain ->
